@@ -6,14 +6,16 @@ import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
+import { useAuth } from '@/context/AuthContext';
 import { loginWithEmailAndPassword } from '@/lib/api-client';
+import { setToken } from '@/lib/cookies';
 import { type FormLoginData, FormLoginDataSchema } from '@/types/user';
 import HookFormInput from './hook-form-input';
-import { setToken } from '@/lib/cookies';
 
 interface LoginFormProps extends React.ComponentProps<'form'> {}
 
 export default function LoginForm({ ...props }: LoginFormProps) {
+	const { saveUser } = useAuth();
 	const { handleSubmit, control } = useForm<FormLoginData>({
 		resolver: zodResolver(FormLoginDataSchema),
 		defaultValues: {
@@ -30,6 +32,7 @@ export default function LoginForm({ ...props }: LoginFormProps) {
 		mutationFn: (data: FormLoginData) => loginWithEmailAndPassword(data),
 		onSuccess: (data) => {
 			setToken(data.data.token);
+			saveUser(data.data.user);
 			navigate(`${redirectTo ? `${redirectTo}` : paths.app.dashboard.getHref()}`, {
 				replace: true,
 			});

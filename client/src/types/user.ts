@@ -62,6 +62,19 @@ export type AuthRegisterResponse = {
 
 export type AuthLoginResponse = {
 	token: string;
+	user: User;
 };
 
 type Role = 'USER' | 'ADMIN';
+
+export type User = {
+	name: string;
+	id: string;
+	email: string;
+	createdAt: Date;
+	hashedPassword: string;
+	role: Role;
+	monthlyIncome: number;
+	phoneNumber: string;
+	updatedAt: Date;
+};

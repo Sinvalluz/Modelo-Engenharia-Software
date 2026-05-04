@@ -1,9 +1,8 @@
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { paths } from '@/config/paths';
 import LoginForm from '@/features/auth/components/login-form';
 
 export default function LoginRoute() {
-	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const redirectTo = searchParams.get('redirectTo');
 	return (
@@ -24,13 +23,7 @@ export default function LoginRoute() {
 								Acesse sua conta para continuar acompanhando suas finanças e seu progresso
 							</p>
 						</div>
-						<LoginForm
-							onSuccess={() => {
-								navigate(`${redirectTo ? `${redirectTo}` : paths.app.root.getHref()}`, {
-									replace: true,
-								});
-							}}
-						/>
+						<LoginForm />
 						<div className='w-full flex justify-center gap-1'>
 							<p className='text-sm'>Ainda não possui uma conta?</p>
 							<Link
