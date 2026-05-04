@@ -1,16 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { type FormRegisterData, FormRegisterDataSchema, useRegister } from '@/lib/auth';
+import { Spinner } from '@/components/ui/spinner';
+import { paths } from '@/config/paths';
+import { registerWithEmailAndPassword } from '@/lib/api-client';
+import { type FormRegisterData, FormRegisterDataSchema } from '@/types/user';
 import HookFormInput from './hook-form-input';
 
-interface RegisterFormProps extends React.ComponentProps<'form'> {
-	onSuccess: () => void;
-}
+interface RegisterFormProps extends React.ComponentProps<'form'> {}
 
-export default function RegisterForm({ onSuccess, ...props }: RegisterFormProps) {
-	const registering = useRegister({ onSuccess });
-
+export default function RegisterForm({ ...props }: RegisterFormProps) {
 	const { handleSubmit, control } = useForm<FormRegisterData>({
 		resolver: zodResolver(FormRegisterDataSchema),
 		defaultValues: {
@@ -18,6 +20,19 @@ export default function RegisterForm({ onSuccess, ...props }: RegisterFormProps)
 			email: '',
 			password: '',
 			monthlyIncome: '',
+		},
+	});
+
+	const navigate = useNavigate();
+
+	const registering = useMutation({
+		mutationFn: (data: FormRegisterData) => registerWithEmailAndPassword(data),
+		onSuccess: (data) => {
+			console.log(data);
+			navigate(paths.app.root.getHref());
+		},
+		onError: (error: AxiosError) => {
+			console.error(error.response?.data);
 		},
 	});
 	async function onSubmit(data: FormRegisterData) {
@@ -69,11 +84,18 @@ export default function RegisterForm({ onSuccess, ...props }: RegisterFormProps)
 				type='text'
 				label='Ganhos mensais'
 			/>
+			{registering.isError && (
+				<p className='text-red-500 text-sm'>
+					{(registering.error as AxiosError<{ message: string }>)?.response?.data?.message ??
+						'Erro ao fazer login. Tente novamente.'}
+				</p>
+			)}
 			<Button
 				type='submit'
+				disabled={registering.isPending}
 				className='w-full cursor-pointer mt-4 mb-4 bg-[#1f7a6b] hover:bg-[#2fae8f] h-10 text-white'
 			>
-				Comece agora
+				{registering.isPending ? <Spinner /> : 'Comece agora'}
 			</Button>
 		</form>
 	);

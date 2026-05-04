@@ -1,23 +1,41 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { type FormLoginData, FormLoginDataSchema, useLogin } from '@/lib/auth';
+import { Spinner } from '@/components/ui/spinner';
+import { paths } from '@/config/paths';
+import { loginWithEmailAndPassword } from '@/lib/api-client';
+import { type FormLoginData, FormLoginDataSchema } from '@/types/user';
 import HookFormInput from './hook-form-input';
+import { setToken } from '@/lib/cookies';
 
-interface LoginFormProps extends React.ComponentProps<'form'> {
-	onSuccess: () => void;
-}
+interface LoginFormProps extends React.ComponentProps<'form'> {}
 
-export default function LoginForm({ onSuccess, ...props }: LoginFormProps) {
-	const login = useLogin({
-		onSuccess,
-	});
+export default function LoginForm({ ...props }: LoginFormProps) {
 	const { handleSubmit, control } = useForm<FormLoginData>({
 		resolver: zodResolver(FormLoginDataSchema),
 		defaultValues: {
 			email: '',
 			password: '',
+		},
+	});
+
+	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const redirectTo = searchParams.get('redirectTo');
+
+	const login = useMutation({
+		mutationFn: (data: FormLoginData) => loginWithEmailAndPassword(data),
+		onSuccess: (data) => {
+			setToken(data.data.token);
+			navigate(`${redirectTo ? `${redirectTo}` : paths.app.dashboard.getHref()}`, {
+				replace: true,
+			});
+		},
+		onError: (error: AxiosError) => {
+			console.error(error.response?.data);
 		},
 	});
 	function onSubmit(data: FormLoginData) {
@@ -51,11 +69,18 @@ export default function LoginForm({ onSuccess, ...props }: LoginFormProps) {
 			>
 				Esqueceu a senha?
 			</Link>
+			{login.isError && (
+				<p className='text-red-500 text-sm'>
+					{(login.error as AxiosError<{ message: string }>)?.response?.data?.message ??
+						'Erro ao fazer login. Tente novamente.'}
+				</p>
+			)}
 			<Button
 				type='submit'
-				className='w-full cursor-pointer mt-4 mb-4 bg-[#1f7a6b] hover:bg-[#2fae8f] h-10 text-white'
+				disabled={login.isPending}
+				className='w-full cursor-pointer mt-2 mb-4 bg-[#1f7a6b] hover:bg-[#2fae8f] h-10 text-white'
 			>
-				Entrar
+				{login.isPending ? <Spinner /> : 'Entrar'}
 			</Button>
 		</form>
 	);

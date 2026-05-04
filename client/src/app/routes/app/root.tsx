@@ -1,9 +1,13 @@
-export const ErrorBoundary = () => {
+import { Outlet } from 'react-router';
+
+export function ErrorBoundary() {
 	return <div>Something went wrong!</div>;
-};
+}
 
-const AppRoot = () => {
-	return <h1>Rota privada</h1>;
-};
-
-export default AppRoot;
+export default function AppRoot() {
+	return (
+		<div>
+			<Outlet />
+		</div>
+	);
+}

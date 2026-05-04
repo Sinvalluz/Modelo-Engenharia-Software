@@ -21,5 +21,9 @@ export const paths = {
 			path: '/app',
 			getHref: () => '/app',
 		},
+		dashboard: {
+			path: '',
+			getHref: () => '/app',
+		},
 	},
 } as const;

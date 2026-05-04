@@ -4,6 +4,7 @@ const createEnv = () => {
 	const EnvSchema = z.object({
 		API_URL: z.string(),
 		APP_URL: z.string().optional().default('http://localhost:5173'),
+		TOKEN_KEY: z.string()
 	});
 
 	const envVars = Object.entries(import.meta.env).reduce<Record<string, string>>((acc, curr) => {
