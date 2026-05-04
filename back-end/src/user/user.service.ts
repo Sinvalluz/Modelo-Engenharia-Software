@@ -39,7 +39,9 @@ export class UserService {
 	}
 
 	async findOne(id: string, authenticatedUser: JwtUserPayload) {
-		if (authenticatedUser.role !== 'ADMIN') {
+		const isSelf = authenticatedUser.id === id;
+		const isAdmin = authenticatedUser.role === 'ADMIN';
+		if (!isSelf && !isAdmin) {
 			throw new UnauthorizedException('Acesso negado. Permissão insuficiente.');
 		}
 
