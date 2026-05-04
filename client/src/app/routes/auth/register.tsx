@@ -1,9 +1,8 @@
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { paths } from '@/config/paths';
 import RegisterForm from '@/features/auth/components/register-form';
 
 export default function RegisterRoute() {
-	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const redirectTo = searchParams.get('redirectTo');
 	return (
@@ -38,13 +37,7 @@ export default function RegisterRoute() {
 								Comece agora a organizar suas finanças e acompanhar seu progresso
 							</p>
 						</div>
-						<RegisterForm
-							onSuccess={() => {
-								navigate(`${redirectTo ? `${redirectTo}` : paths.auth.login.getHref()}`, {
-									replace: true,
-								});
-							}}
-						/>
+						<RegisterForm />
 						<div className='w-full flex justify-center gap-1'>
 							<p className='text-sm'>Já possui uma conta?</p>
 							<Link

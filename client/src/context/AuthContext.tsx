@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { removeToken } from '@/lib/cookies';
 import type { User } from '@/types/user';
 
 export interface AuthContextType {
@@ -33,6 +34,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	const logout = (): void => {
 		setUser(null);
+		removeToken();
+
 		localStorage.removeItem('user');
 	};
 
