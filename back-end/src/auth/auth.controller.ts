@@ -21,7 +21,7 @@ export class AuthController {
 	@ApiResponse({ status: 201, description: 'Login realizado com sucesso.', type: CreateUserDto })
 	@Post('signin')
 	async login(@Body(new ValidationPipe()) body: LoginUserDto) {
-		const { token, user } = await this.authService.login(body);
-		return { token, user };
+		const token = await this.authService.login(body);
+		return token;
 	}
 }

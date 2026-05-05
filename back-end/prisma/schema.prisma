@@ -12,7 +12,7 @@ model User {
   id             String     @id @default(uuid())
   name           String
   email          String     @unique
-  createdAt      DateTime   @map("created_at")
+  createdAt      DateTime   @default(now()) @map("created_at")
   hashedPassword String     @map("hashed_password")
   role           Role
   monthlyIncome  Decimal    @map("monthly_income")
@@ -27,7 +27,7 @@ model Category {
   name         String
   color        String
   categoryType CategoryType @map("category_type")
-  createdAt    DateTime     @map("created_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
   userId       String       @map("user_id")
   user         User         @relation(fields: [userId], references: [id])
@@ -45,7 +45,7 @@ model Launch {
   paymentMethod        PaymentMethod @map("payment_method")
   account              AccountType
   installmentsQuantity Int           @map("installments_quantity")
-  createdAt            DateTime      @map("created_at")
+  createdAt            DateTime      @default(now()) @map("created_at")
   updatedAt            DateTime      @updatedAt @map("updated_at")
   category             Category      @relation(fields: [categoryId], references: [id])
   user                 User          @relation(fields: [userId], references: [id])
