@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'; // BadRequestException
+import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common'; // BadRequestException
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -6,13 +6,18 @@ import { JwtUserPayload } from '../types';
 
 @Injectable()
 export class TransactionService {
-	constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
+  
+  async create(createTransactionDto: CreateTransactionDto, authenticatedUser: JwtUserPayload) {
+    let value = createTransactionDto.value
+    if (value <= 0) {
+      throw new UnprocessableEntityException(`O valor ${value} não é aceito como um valor válido. Por favor insira um número acima de 0.`)
+    }
 
-	async create(createTransactionDto: CreateTransactionDto) {
-		return this.prisma.launch.create({
-			data: {
-				type: createTransactionDto.type,
-				value: createTransactionDto.value,
+    return this.prisma.launch.create({
+      data: {
+        type: createTransactionDto.type,
+        value: createTransactionDto.value,
 
 				date: new Date(createTransactionDto.date),
 
@@ -67,14 +72,16 @@ export class TransactionService {
 		return existingTransaction;
 	}
 
-	async update(id: string, updateTransactionDto: UpdateTransactionDto, authenticatedUser: JwtUserPayload) {
-		// ADMINs dão update em qualquer categoria
-		// USERs dão update só em suas categorias
+  async update(id: string, updateTransactionDto: UpdateTransactionDto, authenticatedUser: JwtUserPayload) {
+    // ADMINs dão update em qualquer categoria
+    // USERs dão update só em suas categorias
+    const {date} = updateTransactionDto;
 
-		// limita as categorias ao usuário
-		var existingTransaction = await this.prisma.launch.findUnique({
-			where: { id, userId: authenticatedUser.id },
-		});
+
+    // limita as categorias ao usuário
+    var existingTransaction = await this.prisma.launch.findUnique({
+      where: { id, userId: authenticatedUser.id },
+    });
 
 		if (authenticatedUser.role == 'ADMIN') {
 			var existingTransaction = await this.prisma.launch.findUnique({
@@ -86,11 +93,13 @@ export class TransactionService {
 		else if (authenticatedUser.id !== existingTransaction.userId && authenticatedUser.role !== 'ADMIN')
 			throw new ForbiddenException('Acesso negado. Permissão insuficiente.');
 
-		return this.prisma.launch.update({
-			where: { id },
-			data: updateTransactionDto,
-		});
-	}
+    return this.prisma.launch.update({
+      where: { id },
+      data: {
+        ...(date && { date: new Date(date) }),
+      },
+    });
+  }
 
 	async remove(id: string, authenticatedUser: JwtUserPayload) {
 		// ADMINs apagam tudo

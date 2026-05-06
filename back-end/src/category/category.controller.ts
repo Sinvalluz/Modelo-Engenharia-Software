@@ -14,8 +14,8 @@ export class CategoryController {
 	@ApiBearerAuth()
 	@UseGuards(UserGuard)
 	@Post()
-	create(@Body(new ValidationPipe()) createCategoryDto: CreateCategoryDto) {
-		return this.categoryService.create(createCategoryDto);
+	create(@Body(new ValidationPipe()) createCategoryDto: CreateCategoryDto, @Request() req: AuthenticatedRequest) {
+		return this.categoryService.create(createCategoryDto, req.user);
 	}
 
 	@ApiBearerAuth()

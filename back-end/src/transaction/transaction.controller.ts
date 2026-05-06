@@ -10,11 +10,11 @@ import type { AuthenticatedRequest } from '../types';
 export class TransactionController {
 	constructor(private readonly transactionService: TransactionService) {}
 
-	@UseGuards(UserGuard)
-	@Post()
-	create(@Body() createTransactionDto: CreateTransactionDto) {
-		return this.transactionService.create(createTransactionDto);
-	}
+  @UseGuards(UserGuard)
+  @Post()
+  create(@Body() createTransactionDto: CreateTransactionDto, @Request() req: AuthenticatedRequest) {
+    return this.transactionService.create(createTransactionDto, req.user);
+  }
 
 	@UseGuards(UserGuard)
 	@Get()

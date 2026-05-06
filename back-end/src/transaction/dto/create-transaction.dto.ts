@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
-import { AccountType, launchType, PaymentMethod } from '../../generated/prisma/enums';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { AccountType, launchType, PaymentMethod  } from "../../generated/prisma/enums";
+
 
 export class CreateTransactionDto {
 	@ApiProperty({
@@ -19,21 +20,21 @@ export class CreateTransactionDto {
 	@IsNotEmpty({ message: 'Insira o valor.' })
 	value!: number;
 
-	@ApiProperty({
-		description: 'Data do lançamento',
-		example: '2026-04-26T00:00:00.000Z',
-	})
-	@IsDate()
-	@IsNotEmpty({ message: 'Insira a data do lançamento.' })
-	date!: Date;
+    @ApiProperty({
+        description: 'Data do lançamento',
+        example: "2026-04-26T00:00:00.000Z",
+    })
+    @IsDateString({}, {message: 'Insira uma data válida no formato ISO: AAAA-MM-DD.'})
+    @IsNotEmpty({ message: 'A data do lançamento é obrigatória.' })
+    date!: string;
 
-	@ApiProperty({
-		description: 'ID da categoria',
-		example: 'uuid-da-categoria',
-	})
-	@IsString()
-	@IsNotEmpty({ message: 'Informe o ID da categoria.' })
-	categoryId!: string;
+    @ApiProperty({
+        description: 'ID da categoria',
+        example: 'uuid-da-categoria',
+    })
+    @IsString() 
+    @IsNotEmpty({ message: 'Informe o ID da categoria.' })
+    categoryId!: string;
 
 	@ApiProperty({
 		description: 'Descrição do lançamento',
@@ -63,20 +64,20 @@ export class CreateTransactionDto {
 	@IsNotEmpty({ message: 'Escolha o tipo de conta.' })
 	account!: AccountType;
 
-	@ApiProperty({
-		description: 'Quantidade de parcelas',
-		example: 8,
-		required: false,
-	})
-	@IsOptional()
-	@IsNumber()
-	installmentsQuantity?: number;
-
-	@ApiProperty({
-		description: 'ID do usuário dono da transação',
-		example: 'uuid-do-usuario',
-	})
-	@IsUUID()
-	@IsNotEmpty({ message: 'O lançamento deve pertencer a um usuário.' })
-	userId!: string;
+    @ApiProperty({
+        description: 'Quantidade de parcelas',
+        example: 8,
+        required: false,
+    })
+    @IsOptional()
+    @IsNumber()
+    installmentsQuantity?: number;
+    
+    @ApiProperty({
+        description: 'ID do usuário dono da transação',
+        example: 'uuid-do-usuario',
+    })
+    @IsUUID() //versão, {message: 'Insira um UUID válido.'}
+    @IsNotEmpty({ message: 'O lançamento deve pertencer a um usuário.' })
+    userId!: string;
 }
