@@ -4,124 +4,115 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtUserPayload } from '../types';
 
-
 @Injectable()
 export class TransactionService {
-  constructor(private readonly prisma: PrismaService) { }
+	constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTransactionDto: CreateTransactionDto) {
-    return this.prisma.launch.create({
-      data: {
-        type: createTransactionDto.type,
-        value: createTransactionDto.value,
+	async create(createTransactionDto: CreateTransactionDto) {
+		return this.prisma.launch.create({
+			data: {
+				type: createTransactionDto.type,
+				value: createTransactionDto.value,
 
-        date: new Date(createTransactionDto.date),
+				date: new Date(createTransactionDto.date),
 
-        description: createTransactionDto.description,
-        paymentMethod: createTransactionDto.paymentMethod,
-        account: createTransactionDto.account,
-        installmentsQuantity: createTransactionDto.installmentsQuantity ?? 1,
-        category: {
-          connect: {
-            id: createTransactionDto.categoryId
-          },
-        },
-        user: {
-          connect: {
-            id: createTransactionDto.userId,
-          },
-        },
+				description: createTransactionDto.description,
+				paymentMethod: createTransactionDto.paymentMethod,
+				account: createTransactionDto.account,
+				installmentsQuantity: createTransactionDto.installmentsQuantity ?? 1,
+				category: {
+					connect: {
+						id: createTransactionDto.categoryId,
+					},
+				},
+				user: {
+					connect: {
+						id: createTransactionDto.userId,
+					},
+				},
+			},
+		});
+	}
 
-      }
-    })
-  }
+	async findAll(authenticatedUser: JwtUserPayload) {
+		// ADMINs conseguem ver as transações de TODOS os usuários
+		// USERs conseguem ver somente suas transações
 
-  async findAll(authenticatedUser: JwtUserPayload) {
-    // ADMINs conseguem ver as transações de TODOS os usuários
-    // USERs conseguem ver somente suas transações
+		if (authenticatedUser.role == 'ADMIN') {
+			return this.prisma.launch.findMany();
+		}
 
-    if (authenticatedUser.role == 'ADMIN') {
-      return this.prisma.launch.findMany()
-    }
+		// limita as categorias ao usuário
+		return this.prisma.launch.findMany({
+			where: { userId: authenticatedUser.id },
+		});
+	}
 
-    // limita as categorias ao usuário
-    return this.prisma.launch.findMany({
-      where: { userId: authenticatedUser.id }
-    })
-  }
+	async findOne(id: string, authenticatedUser: JwtUserPayload) {
+		var existingTransaction = await this.prisma.launch.findUnique({
+			where: { id, userId: authenticatedUser.id },
+		});
 
-  async findOne(id: string, authenticatedUser: JwtUserPayload) {
-    var existingTransaction = await this.prisma.launch.findUnique({
-      where: { id, userId: authenticatedUser.id },
-    })
+		if (authenticatedUser.role == 'ADMIN') {
+			var existingTransaction = await this.prisma.launch.findUnique({
+				where: { id },
+			});
+		}
 
-    if(authenticatedUser.role == 'ADMIN'){
-      var existingTransaction = await this.prisma.launch.findUnique({
-        where: { id },
-      })
-    }
+		if (!existingTransaction) {
+			throw new NotFoundException(`Transação número ${id} não encontrado.`);
+		} else if (existingTransaction.userId !== authenticatedUser.id && authenticatedUser.role !== 'ADMIN')
+			throw new ForbiddenException('Acesso negado. Permissão insuficiente.');
 
-    if (!existingTransaction) {
-      throw new NotFoundException(`Transação número ${id} não encontrado.`)
-    }
+		return existingTransaction;
+	}
 
-    else if (existingTransaction.userId !== authenticatedUser.id && authenticatedUser.role !== 'ADMIN')
-      throw new ForbiddenException("Acesso negado. Permissão insuficiente.")
+	async update(id: string, updateTransactionDto: UpdateTransactionDto, authenticatedUser: JwtUserPayload) {
+		// ADMINs dão update em qualquer categoria
+		// USERs dão update só em suas categorias
 
-    return existingTransaction;
-  }
+		// limita as categorias ao usuário
+		var existingTransaction = await this.prisma.launch.findUnique({
+			where: { id, userId: authenticatedUser.id },
+		});
 
-  async update(id: string, updateTransactionDto: UpdateTransactionDto, authenticatedUser: JwtUserPayload) {
-// ADMINs dão update em qualquer categoria
-    // USERs dão update só em suas categorias
+		if (authenticatedUser.role == 'ADMIN') {
+			var existingTransaction = await this.prisma.launch.findUnique({
+				where: { id },
+			});
+		}
 
-    
-    // limita as categorias ao usuário
-    var existingTransaction = await this.prisma.launch.findUnique({
-      where: { id, userId: authenticatedUser.id },
-    });
+		if (!existingTransaction) throw new NotFoundException('Lançamento não encontrado.');
+		else if (authenticatedUser.id !== existingTransaction.userId && authenticatedUser.role !== 'ADMIN')
+			throw new ForbiddenException('Acesso negado. Permissão insuficiente.');
 
-    if (authenticatedUser.role == 'ADMIN') {
-      var existingTransaction = await this.prisma.launch.findUnique({
-        where: { id }
-      })
-    }
+		return this.prisma.launch.update({
+			where: { id },
+			data: updateTransactionDto,
+		});
+	}
 
-    if (!existingTransaction)
-      throw new NotFoundException("Lançamento não encontrado.")
+	async remove(id: string, authenticatedUser: JwtUserPayload) {
+		// ADMINs apagam tudo
+		// USERs apagam só o seu
 
-    else if (authenticatedUser.id !== existingTransaction.userId && authenticatedUser.role !== 'ADMIN')
-      throw new ForbiddenException("Acesso negado. Permissão insuficiente.")
+		// limita as categorias ao usuário
+		var existingTransaction = await this.prisma.launch.findUnique({
+			where: { id, userId: authenticatedUser.id },
+		});
 
-    return this.prisma.launch.update({
-      where: { id },
-      data: updateTransactionDto,
-    });
-  }
+		if (authenticatedUser.role == 'ADMIN') {
+			var existingTransaction = await this.prisma.launch.findUnique({
+				where: { id },
+			});
+		}
 
-  async remove(id: string, authenticatedUser: JwtUserPayload) {
-    // ADMINs apagam tudo
-    // USERs apagam só o seu
+		if (!existingTransaction) throw new NotFoundException('Lançamento não encontrado.');
+		else if (authenticatedUser.id !== existingTransaction.userId && authenticatedUser.role !== 'ADMIN')
+			throw new ForbiddenException('Acesso negado. Permissão insuficiente.');
 
-    // limita as categorias ao usuário
-    var existingTransaction = await this.prisma.launch.findUnique({
-      where: { id, userId: authenticatedUser.id },
-    });
-
-    if (authenticatedUser.role == 'ADMIN') {
-      var existingTransaction = await this.prisma.launch.findUnique({
-        where: { id }
-      })
-    }
-
-    if (!existingTransaction)
-      throw new NotFoundException("Lançamento não encontrado.")
-
-    else if (authenticatedUser.id !== existingTransaction.userId && authenticatedUser.role !== 'ADMIN')
-      throw new ForbiddenException("Acesso negado. Permissão insuficiente.")
-
-    return this.prisma.launch.delete({
-      where: { id },
-    });
-  }
+		return this.prisma.launch.delete({
+			where: { id },
+		});
+	}
 }
