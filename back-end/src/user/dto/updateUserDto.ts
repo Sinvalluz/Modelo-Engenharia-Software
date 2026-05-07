@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime/client';
-import { IsEmail, IsNotEmpty, IsNumber, IsPhoneNumber, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from 'class-validator';
 
 export class UpdateUserDto {
 	@ApiProperty({
