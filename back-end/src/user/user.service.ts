@@ -38,15 +38,9 @@ export class UserService {
 		return userWithoutPassword;
 	}
 
-	async findOne(id: string, authenticatedUser: JwtUserPayload) {
-		const isSelf = authenticatedUser.id === id;
-		const isAdmin = authenticatedUser.role === 'ADMIN';
-		if (!isSelf && !isAdmin) {
-			throw new UnauthorizedException('Acesso negado. Permissão insuficiente.');
-		}
-
+	async findOne(authenticatedUser: JwtUserPayload) {
 		const existingUser = await this.prismaService.user.findUnique({
-			where: { id },
+			where: { id: authenticatedUser.id },
 		});
 
 		if (!existingUser) throw new NotFoundException('Usuário não encontrado.');
@@ -86,17 +80,16 @@ export class UserService {
 
 		if (emailAlreadyInUse) throw new BadRequestException('O e-mail informado já está em uso por outro usuário.');
 
-		user.name = updateUserDto.name ?? user.name;
-		user.email = updateUserDto.email ?? user.email;
-		user.phoneNumber = updateUserDto.phoneNumber ?? user.phoneNumber;
-		user.monthlyIncome = updateUserDto.monthlyIncome ?? user.monthlyIncome;
-		user.updatedAt = new Date();
-
-		await this.prismaService.user.update({
+		const updatedUser = await this.prismaService.user.update({
 			where: { id },
-			data: user,
+			data: {
+				name: updateUserDto.name ?? user.name,
+				email: updateUserDto.email ?? user.email,
+				phoneNumber: updateUserDto.phoneNumber ?? user.phoneNumber,
+				monthlyIncome: updateUserDto.monthlyIncome ?? user.monthlyIncome,
+			},
 		});
-		const { hashedPassword, ...userWithoutPassword } = user;
+		const { hashedPassword, ...userWithoutPassword } = updatedUser;
 		return userWithoutPassword;
 	}
 
