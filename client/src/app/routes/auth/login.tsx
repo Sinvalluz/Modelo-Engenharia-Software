@@ -5,6 +5,7 @@ import LoginForm from '@/features/auth/components/login-form';
 export default function LoginRoute() {
 	const [searchParams] = useSearchParams();
 	const redirectTo = searchParams.get('redirectTo');
+
 	return (
 		<div className='h-lvh flex items-center justify-center bg-[#f7f9f8] lg:p-4 select-none'>
 			<div className='p-4 h-full flex flex-col rounded-2xl lg:w-1/2'>
