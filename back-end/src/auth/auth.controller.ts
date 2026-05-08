@@ -1,15 +1,4 @@
-import {
-	Body,
-	Controller,
-	HttpCode,
-	HttpStatus,
-	Post,
-	Req,
-	Res,
-	UnauthorizedException,
-	UseGuards,
-	ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/createUserDto';
 import { AuthService } from './auth.service';
@@ -51,7 +40,7 @@ export class AuthController {
 		response.cookie('access_token', token, {
 			httpOnly: true, // JS do browser não consegue acessar
 			secure: true, // Apenas HTTPS (use false em dev local)
-			sameSite: 'strict', // Proteção contra CSRF
+			sameSite: 'none', // Proteção contra CSRF
 			maxAge: 1000 * 60 * 60 * 24 * 7, // 7 dias em ms
 		});
 
