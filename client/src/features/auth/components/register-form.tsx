@@ -26,10 +26,9 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 	const navigate = useNavigate();
 
 	const registering = useMutation({
-		mutationFn: (data: FormRegisterData) => registerWithEmailAndPassword(data),
-		onSuccess: (data) => {
-			console.log(data);
-			navigate(paths.app.root.getHref());
+		mutationFn: (formRegisterData: FormRegisterData) => registerWithEmailAndPassword(formRegisterData),
+		onSuccess: () => {
+			navigate(paths.auth.login.getHref());
 		},
 		onError: (error: AxiosError) => {
 			console.error(error.response?.data);

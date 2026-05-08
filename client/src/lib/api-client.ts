@@ -4,23 +4,26 @@ import type { AuthLoginResponse, AuthRegisterResponse, FormLoginData, FormRegist
 
 export const api = Axios.create({
 	baseURL: env.API_URL,
+	withCredentials: true,
 });
 
-export function registerWithEmailAndPassword(data: FormRegisterData) {
+export async function registerWithEmailAndPassword(data: FormRegisterData) {
 	const payload = {
 		...data,
 		monthlyIncome: Number(data.monthlyIncome),
 	};
 
-	return api.post<AuthRegisterResponse>('auth/signup', payload);
+	return await api.post<AuthRegisterResponse>('auth/signup', payload);
 }
 
-export function loginWithEmailAndPassword(data: FormLoginData) {
-	return api.post<FormLoginData, AxiosResponse<AuthLoginResponse>>('/auth/signin', data);
+export async function loginWithEmailAndPassword(data: FormLoginData) {
+	return await api.post<FormLoginData, AxiosResponse<AuthLoginResponse>>('/auth/signin', data);
 }
 
-export function fetchMe(token: string, userId: string) {
-	return api.get<any, AxiosResponse<User>>(`/user/${userId}`, {
-		headers: { Authorization: `Bearer ${token}` },
-	});
+export async function fetchMe() {
+	return await api.get<any, AxiosResponse<User>>('/user/me');
+}
+
+export async function logout() {
+	return await api.post('/auth/logout');
 }
