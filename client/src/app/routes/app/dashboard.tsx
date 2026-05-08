@@ -13,7 +13,6 @@ export default function DashboardRoute() {
 	return (
 		<div>
 			<h1>Bem vindo a sua futura dashboard</h1>
-			{/* Uso do optional chaining por segurança */}
 			<p>Olá, {user?.name}!</p>
 
 			<Button
@@ -21,9 +20,9 @@ export default function DashboardRoute() {
 				onClick={async () => {
 					try {
 						await logout();
-						queryClient.removeQueries({ queryKey: ['user'] });
-						setUser(null);
+						queryClient.clear();
 						navigate(paths.auth.login.getHref());
+						setUser(null);
 					} catch (e) {
 						console.error('Erro ao deslogar', e);
 					}
