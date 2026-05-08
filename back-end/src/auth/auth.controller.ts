@@ -64,7 +64,11 @@ export class AuthController {
 		if (!token) {
 			return { message: 'Nenhuma sessão ativa encontrada.' };
 		}
-		res.clearCookie('access_token');
+		res.clearCookie('access_token', {
+			httpOnly: true,
+			sameSite: 'none',
+			secure: true,
+		});
 		return { message: 'Logout realizado com sucesso' };
 	}
 }
