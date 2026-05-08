@@ -15,8 +15,8 @@ model User {
   createdAt      DateTime   @default(now()) @map("created_at")
   hashedPassword String     @map("hashed_password")
   role           Role
-  monthlyIncome  Decimal    @map("monthly_income")
-  phoneNumber    String     @map("phone_number")
+  monthlyIncome  Decimal?    @map("monthly_income")
+  phoneNumber    String?     @map("phone_number")
   updatedAt      DateTime   @updatedAt @map("updated_at")
   categories     Category[]
   launch         Launch[]

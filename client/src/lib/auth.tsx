@@ -1,35 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router';
+import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { useAuth } from '@/context/AuthContext';
 import { fetchMe } from './api-client';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-	const { user, saveUser } = useAuth();
+	const { setUser } = useAuth();
 	const location = useLocation();
 
-	const token = localStorage.getItem('token');
-	const userId = localStorage.getItem('userId');
-
-	const { isLoading, isError } = useQuery({
-		queryKey: ['me', userId],
-		queryFn: async () => {
-			if (!token || !userId) {
-				throw new Error('No token or userId');
-			}
-			const response = await fetchMe(token, userId);
-			saveUser(response.data);
-			return response.data;
-		},
-		enabled: !!token && !!userId,
-		staleTime: 1000 * 60 * 5,
+	const { data, isLoading, isError, isSuccess } = useQuery({
+		queryKey: ['user'],
+		queryFn: fetchMe,
+		retry: false,
 	});
 
-	if (isLoading) {
-		return <div>Loading...</div>;
-	}
+	useEffect(() => {
+		if (isSuccess) {
+			setUser(data.data);
+		}
+	}, [isSuccess, data?.data, setUser]);
 
-	if (isError || !user) {
+	if (isLoading) return <Spinner />;
+
+	if (isError) {
 		return (
 			<Navigate
 				to={paths.auth.login.getHref(location.pathname)}
