@@ -1,13 +1,24 @@
 import Axios, { type AxiosResponse } from 'axios';
+import type z from 'zod';
 import { env } from '@/config/env';
-import type { AuthLoginResponse, AuthRegisterResponse, FormLoginData, FormRegisterData, User } from '@/types/user';
+import type {
+	AuthLoginResponse,
+	AuthRegisterResponse,
+	FormLoginData,
+	FormRegisterDataSchema,
+	User,
+} from '@/types/user';
 
 export const api = Axios.create({
 	baseURL: env.API_URL,
 	withCredentials: true,
 });
 
-export async function registerWithEmailAndPassword(data: FormRegisterData) {
+type Data = Omit<z.infer<typeof FormRegisterDataSchema>, 'monthlyIncome' | 'phoneNumber'> & {
+	monthlyIncome?: number;
+	phoneNumber?: string;
+};
+export async function registerWithEmailAndPassword(data: Data) {
 	const payload = {
 		...data,
 		monthlyIncome: Number(data.monthlyIncome),

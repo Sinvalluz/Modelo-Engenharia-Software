@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumber, IsPhoneNumber, IsString, MinLength } from 'class-validator';
+import {
+	IsEmail,
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsPhoneNumber,
+	IsString,
+	Matches,
+	MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
 	@ApiProperty({
@@ -35,7 +44,8 @@ export class CreateUserDto {
 	@IsPhoneNumber('BR', {
 		message: 'O número de telefone deve ser um formato válido do Brasil (Ex: +55 71999999999).',
 	})
-	@IsNotEmpty({ message: 'O telefone é obrigatório.' })
+	@Matches(/^\+55\s\d{2}\s\d{4,5}-\d{4}$/, { message: 'Digite um telefone válido (ex: +55 71 99618-6907)' })
+	@IsOptional()
 	phoneNumber!: string;
 
 	@ApiProperty({
@@ -43,6 +53,6 @@ export class CreateUserDto {
 		example: 3500.5,
 	})
 	@IsNumber({}, { message: 'A renda mensal deve ser um valor numérico.' })
-	@IsNotEmpty({ message: 'A renda mensal é obrigatória.' })
+	@IsOptional()
 	monthlyIncome!: number;
 }

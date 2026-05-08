@@ -25,7 +25,6 @@ export class UserGuard implements CanActivate {
 	}
 
 	private extractTokenFromCookie(request: Request): string | undefined {
-		console.log('Cookies:', request.cookies); // 👈
 		return request.cookies?.access_token;
 	}
 }
