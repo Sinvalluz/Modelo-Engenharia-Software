@@ -1,8 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { createBrowserRouter, Outlet } from 'react-router';
 import { paths } from '@/config/paths';
-import { ProtectedRoute } from '@/lib/auth';
-
+import LayoutRoute from './routes/app/Layout';
 import PublicRoute from './routes/auth/public';
 
 const convert = (queryClient: QueryClient) => (m: any) => {
@@ -57,14 +56,18 @@ export const createAppRouter = (queryClient: QueryClient) =>
 				{
 					path: paths.app.root.path,
 					element: (
-						<ProtectedRoute>
+						<LayoutRoute>
 							<Outlet />
-						</ProtectedRoute>
+						</LayoutRoute>
 					),
 					children: [
 						{
 							path: paths.app.dashboard.path,
 							lazy: () => import('./routes/app/dashboard').then(convert(queryClient)),
+						},
+						{
+							path: paths.app.launches.path,
+							lazy: () => import('./routes/app/Launches').then(convert(queryClient)),
 						},
 					],
 				},

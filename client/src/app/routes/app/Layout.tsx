@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router';
+import AppLayout from '@/components/layouts/AppLayout';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
-import { useAuth } from '@/context/AuthContext';
-import { fetchMe } from './api-client';
+import { fetchMe } from '@/lib/api-client';
+import { useAuth } from '@/providers/AuthProvider';
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+export default function LayoutRoute({ children }: { children: React.ReactNode }) {
 	const { setUser } = useAuth();
 	const location = useLocation();
 
@@ -32,6 +33,10 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 			/>
 		);
 	}
-
-	return children;
-};
+	return (
+		<div className='h-screen box-border w-full flex flex-col'>
+			<AppLayout />
+			{children}
+		</div>
+	);
+}
