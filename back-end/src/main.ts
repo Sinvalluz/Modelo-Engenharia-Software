@@ -9,7 +9,7 @@ async function bootstrap() {
 
 	app.enableCors({
 		origin: [
-			'http://localhost:5173/',
+			'http://localhost:5173',
 			'https://modelo-engenharia-software.vercel.app',
 			'https://modelo-engenharia-software-nzm5.vercel.app',
 		],
