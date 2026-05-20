@@ -1,6 +1,6 @@
 import NewLaunchButton from '@/components/NewLaunchButton';
-import FilterCard from '@/features/launches/components/FilterCard';
-import LaunchesCard from '@/features/launches/components/LaunchesCard';
+import LaunchesCard from '@/features/launches/components/cards/LaunchesCard';
+import FilterCard from '@/features/launches/components/forms/FilterForm';
 
 export default function LaunchesRoute() {
 	return (

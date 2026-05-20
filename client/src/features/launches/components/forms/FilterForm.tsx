@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import FilterSelect from './FilterSelect';
+import FilterSelect from '../selects/FilterSelect';
 
 const periods = [
 	{ id: 1, item: 'Maio 2026' },

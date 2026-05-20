@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { type Control, Controller, type FieldValues, type Path } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { maskCurrency, maskName, maskPhone } from '@/utils/masks';
+import { maskCurrency } from '../utils/maskCurrency';
+import { maskName } from '../utils/maskName';
+import { maskPhone } from '../utils/maskPhone';
 
 interface HookFormInputProps<T extends FieldValues> {
 	control: Control<T>;
