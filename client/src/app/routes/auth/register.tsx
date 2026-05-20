@@ -6,7 +6,7 @@ export default function RegisterRoute() {
 	const [searchParams] = useSearchParams();
 	const redirectTo = searchParams.get('redirectTo');
 	return (
-		<div className='h-lvh flex items-center justify-center lg:p-4 select-none'>
+		<div className='h-lvh flex items-center justify-center bg-background text-foreground lg:p-4 select-none'>
 			<div
 				className='hidden  min-h-full w-1/2 lg:flex flex-col justify-between p-9 bg-cover bg-center  box-border rounded-2xl'
 				style={{ backgroundImage: "url('/mesh-276.png')" }}

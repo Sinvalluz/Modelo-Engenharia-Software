@@ -8,6 +8,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { registerWithEmailAndPassword } from '@/lib/api-client';
 import { type FormRegisterData, FormRegisterDataSchema } from '@/types/user';
+import { normalizeMonthlyIncome } from '../utils/normalizeMonthlyIncome';
+import { normalizePhone } from '../utils/normalizePhone';
 import HookFormInput from './hook-form-input';
 
 interface RegisterFormProps extends React.ComponentProps<'form'> {}
@@ -36,19 +38,6 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 		},
 	});
 
-	function normalizePhone(value?: string): string | undefined {
-		if (!value) return undefined;
-		return value.replace(/^\((\d{2})\)\s/, '+55 $1 ');
-	}
-
-	function normalizeMonthlyIncome(value?: string): number | undefined {
-		if (!value || value.trim() === '') return undefined;
-
-		const clean = value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-
-		const parsed = Number(clean);
-		return Number.isNaN(parsed) ? undefined : parsed;
-	}
 	async function onSubmit(data: FormRegisterData) {
 		const payload = {
 			...data,
@@ -56,7 +45,6 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 			monthlyIncome: normalizeMonthlyIncome(data.monthlyIncome),
 		};
 
-		console.log(payload.monthlyIncome);
 		registering.mutate(payload);
 	}
 	return (

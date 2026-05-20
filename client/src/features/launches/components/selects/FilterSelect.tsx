@@ -23,9 +23,12 @@ interface FilterSelectProps {
 export default function FilterSelect({ label, firstValueSelect, valuesSelects }: FilterSelectProps) {
 	return (
 		<div className='flex-1 space-y-2'>
-			<Label>{label}</Label>
+			<Label htmlFor={label}>{label}</Label>
 			<Select>
-				<SelectTrigger className='w-full p-4'>
+				<SelectTrigger
+					className='w-full p-4'
+					id={label}
+				>
 					<SelectValue placeholder={firstValueSelect} />
 				</SelectTrigger>
 				<SelectContent className='w-full'>

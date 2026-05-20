@@ -2,6 +2,7 @@ import { CircleAlert, RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import listAllLaunches from '../../services/listAllLaunches';
 
 export default function ErrorLaunchesCard() {
 	return (
@@ -13,7 +14,12 @@ export default function ErrorLaunchesCard() {
 
 				<p className='text-red-700'>Erro ao carregar lançamentos</p>
 				<p className='text-red-500 text-center text-xs mb-2'>Tente novamente em alguns instantes.</p>
-				<Button className='bg-red-600 hover:bg-red-500 transition-colors text-white cursor-pointer'>
+				<Button
+					className='bg-red-600 hover:bg-red-500 transition-colors text-white cursor-pointer'
+					onClick={() => {
+						listAllLaunches();
+					}}
+				>
 					<RefreshCcw />
 					Recarregar
 				</Button>

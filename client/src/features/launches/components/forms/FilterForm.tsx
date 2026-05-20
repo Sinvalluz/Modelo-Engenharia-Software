@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import FilterSelect from './FilterSelect';
+import FilterSelect from '../selects/FilterSelect';
 
-const periodos = [
+const periods = [
 	{ id: 1, item: 'Maio 2026' },
 	{ id: 2, item: 'Abril 2026' },
 	{ id: 3, item: 'Março 2026' },
@@ -35,6 +35,7 @@ export default function FilterCard() {
 					<Search />
 					<Input
 						className='border-0 ring-0 focus-visible:ring-0 dark:bg-transparent'
+						id='filterInput'
 						placeholder='Buscar por descrição...'
 					/>
 				</div>
@@ -50,7 +51,7 @@ export default function FilterCard() {
 				<FilterSelect
 					label='Período'
 					firstValueSelect='Maio 2026'
-					valuesSelects={periodos}
+					valuesSelects={periods}
 				/>
 				<FilterSelect
 					firstValueSelect='Todas'

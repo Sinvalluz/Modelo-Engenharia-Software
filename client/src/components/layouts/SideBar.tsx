@@ -1,9 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { ChevronRight, LayoutDashboard, LogOut, PanelRightOpen, Plus, TableOfContents, Tag, User } from 'lucide-react';
+import { ChevronRight, LayoutDashboard, LogOut, PanelRightOpen, TableOfContents, Tag, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { paths } from '@/config/paths';
 import { logout } from '@/lib/api-client';
 import { useAuth } from '@/providers/AuthProvider';
+import NewLaunchButton from '../NewLaunchButton';
 import { Button } from '../ui/button';
 import { ThemeButton } from '../ui/ThemeButton';
 
@@ -79,10 +80,7 @@ export default function SideBar({ open, setOpen }: SideBarProps) {
 						/>
 					</Link>
 				))}
-				<Button className='cursor-pointer bg-[#1f7a6b] hover:bg-[#2fae8f] text-white h-12 flex items-center mt-3'>
-					<Plus className='size-5' />
-					<span className='leading-none'>Novo Lançamento</span>
-				</Button>
+				<NewLaunchButton />
 			</nav>
 
 			{/* Footer */}

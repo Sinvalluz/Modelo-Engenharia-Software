@@ -63,12 +63,12 @@ export default function LoginForm({ ...props }: LoginFormProps) {
 			/>
 			<Link
 				to={'/auth/forgot-password'}
-				className='text-end w-full block text-sm'
+				className='text-end w-full block text-sm text-muted-foreground transition-colors hover:text-foreground'
 			>
 				Esqueceu a senha?
 			</Link>
 			{login.isError && (
-				<p className='text-red-500 text-sm'>
+				<p className='text-destructive text-sm'>
 					{(login.error as AxiosError<{ message: string }>)?.response?.data?.message ??
 						'Erro ao fazer login. Tente novamente.'}
 				</p>

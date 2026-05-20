@@ -29,5 +29,9 @@ export const paths = {
 			path: 'launches',
 			getHref: () => '/app/launches',
 		},
+		newLaunch: {
+			path: 'launches/new',
+			getHref: () => '/app/launches/new',
+		},
 	},
 } as const;
