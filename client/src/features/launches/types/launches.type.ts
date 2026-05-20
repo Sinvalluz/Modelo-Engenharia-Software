@@ -39,3 +39,18 @@ export type CreateLaunchResponse = {
 	createdAt: string;
 	updatedAt: string;
 };
+
+export type Launch = {
+	id: string;
+	userId: string;
+	categoryId: string;
+	type: string;
+	value: string;
+	date: string;
+	description: string;
+	paymentMethod: string;
+	account: string;
+	installmentsQuantity: number;
+	createdAt: string;
+	updatedAt: string;
+};

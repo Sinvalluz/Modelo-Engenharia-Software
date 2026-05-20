@@ -7,7 +7,7 @@ export default function LoginRoute() {
 	const redirectTo = searchParams.get('redirectTo');
 
 	return (
-		<div className='h-lvh flex items-center justify-center bg-[#f7f9f8] lg:p-4 select-none'>
+		<div className='h-lvh flex items-center justify-center bg-background text-foreground lg:p-4 select-none'>
 			<div className='p-4 h-full flex flex-col rounded-2xl lg:w-1/2'>
 				<div className='flex flex-col justify-center items-center'>
 					<div className='lg:max-w-96'>

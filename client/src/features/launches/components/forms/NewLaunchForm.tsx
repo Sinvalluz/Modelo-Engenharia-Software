@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { CircleCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -42,6 +42,7 @@ export default function NewLaunchForm() {
 	const selectedLaunchType = useWatch({ control, name: 'type' });
 	const selectedPaymentMethod = useWatch({ control, name: 'paymentMethod' });
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const { user } = useAuth();
 
 	useEffect(() => {
@@ -68,6 +69,7 @@ export default function NewLaunchForm() {
 	const launchQuery = useMutation({
 		mutationFn: createLaunches,
 		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['launches'] });
 			reset();
 			setInstallmentsEnabled(false);
 			setSuccessDialogOpen(true);
