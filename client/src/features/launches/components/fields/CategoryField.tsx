@@ -1,16 +1,20 @@
+import { useQuery } from '@tanstack/react-query';
 import { type Control, Controller } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import findAllCategories from '@/lib/findAllCategories';
 import type { LaunchFormData } from '../../types/launches.type';
 
 interface CategoryFieldProps {
 	control: Control<LaunchFormData>;
 }
 
-// Fazer requisição na api
-const categoryOptions = ['Categoria 1', 'Categoria 2', 'Categoria 3', 'Categoria 4', 'Categoria 5', 'Categoria 6'];
-
 export default function CategoryField({ control }: CategoryFieldProps) {
+	const { data } = useQuery({
+		queryKey: ['categories'],
+		queryFn: findAllCategories,
+		retry: false,
+	});
 	return (
 		<Controller
 			control={control}
@@ -29,12 +33,12 @@ export default function CategoryField({ control }: CategoryFieldProps) {
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
-								{categoryOptions.map((category) => (
+								{data?.data.map((category) => (
 									<SelectItem
-										key={category}
-										value={category}
+										key={category.id}
+										value={category.id}
 									>
-										{category}
+										{category.name}
 									</SelectItem>
 								))}
 							</SelectGroup>
