@@ -1,7 +1,7 @@
 import { type Control, Controller } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { LaunchFormData } from '../../types/launches.type';
+import type { LaunchFormData } from '../../schemas/launch.schema';
 
 interface PaymentTypeFieldProps {
 	control: Control<LaunchFormData>;
@@ -9,17 +9,24 @@ interface PaymentTypeFieldProps {
 }
 
 const paymentMethods = [
+	{ value: 'CREDIT', label: 'Crédito' },
+	{ value: 'DEBIT', label: 'Débito' },
 	{ value: 'DEPOSIT', label: 'Depósito' },
-	{ value: 'DEBIT_CARD', label: 'Cartão de débito' },
-	{ value: 'CREDIT_CARD', label: 'Cartão de crédito' },
+	{ value: 'MONEY', label: 'Dinheiro' },
 	{ value: 'PIX', label: 'PIX' },
 	{ value: 'TRANSFER', label: 'Transferência' },
 ];
 
-const incomePaymentMethods = paymentMethods.filter((method) => ['DEPOSIT', 'PIX', 'TRANSFER'].includes(method.value));
+const incomePaymentMethods = paymentMethods.filter((method) =>
+	['DEPOSIT', 'PIX', 'TRANSFER', 'MONEY'].includes(method.value),
+);
+
+const expensePaymentMethods = paymentMethods.filter((method) =>
+	['DEBIT', 'PIX', 'TRANSFER', 'MONEY', 'CREDIT'].includes(method.value),
+);
 
 export default function PaymentTypeField({ control, launchType }: PaymentTypeFieldProps) {
-	const availablePaymentMethods = launchType === 'INCOME' ? incomePaymentMethods : paymentMethods;
+	const availablePaymentMethods = launchType === 'INCOME' ? incomePaymentMethods : expensePaymentMethods;
 
 	return (
 		<Controller

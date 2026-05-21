@@ -1,7 +1,7 @@
 import { type Control, Controller, useWatch } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import type { LaunchFormData } from '../../types/launches.type';
+import type { LaunchFormData } from '../../schemas/launch.schema';
 import { maskMoneyInput } from '../../utils/maskMoneyInput';
 
 interface MoneyValueFieldProps {
@@ -37,10 +37,9 @@ export default function MoneyValueField({ control }: MoneyValueFieldProps) {
 						<Input
 							{...field}
 							type='text'
-							min={0}
+							inputMode='numeric'
 							onChange={(e) => {
-								const masked = maskMoneyInput(e.target.value, field.value);
-								field.onChange(masked);
+								field.onChange(maskMoneyInput(e.target.value, field.value));
 							}}
 							className='border-0 ring-0 focus-visible:ring-0 dark:bg-transparent h-14'
 							placeholder='Digite o valor'

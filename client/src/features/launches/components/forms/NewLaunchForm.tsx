@@ -12,8 +12,8 @@ import { FieldGroup } from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { useAuth } from '@/providers/AuthProvider';
+import { type LaunchFormData, launchFormSchema } from '../../schemas/launch.schema';
 import createLaunches from '../../services/createLaunches';
-import { type LaunchFormData, launchFormSchema } from '../../types/launches.type';
 import AccountTypeField from '../fields/AccountTypeField';
 import CategoryField from '../fields/CategoryField';
 import DateField from '../fields/DateField';
@@ -41,12 +41,13 @@ export default function NewLaunchForm() {
 	const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 	const selectedLaunchType = useWatch({ control, name: 'type' });
 	const selectedPaymentMethod = useWatch({ control, name: 'paymentMethod' });
+	const selectedAccountType = useWatch({ control, name: 'AccountType' });
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { user } = useAuth();
 
 	useEffect(() => {
-		const incomePaymentMethods = ['DEPOSIT', 'PIX', 'TRANSFER'];
+		const incomePaymentMethods = ['DEPOSIT', 'PIX', 'TRANSFER', 'MONEY'];
 
 		if (
 			selectedLaunchType === 'INCOME' &&
@@ -60,11 +61,22 @@ export default function NewLaunchForm() {
 	}, [selectedLaunchType, selectedPaymentMethod, setValue]);
 
 	useEffect(() => {
-		if (selectedPaymentMethod !== 'CREDIT_CARD' && installmentsEnabled) {
+		if (selectedPaymentMethod !== 'CREDIT' && installmentsEnabled) {
 			setInstallmentsEnabled(false);
 			setValue('installments_quantity', '');
 		}
 	}, [installmentsEnabled, selectedPaymentMethod, setValue]);
+
+	useEffect(() => {
+		if (selectedPaymentMethod === 'MONEY') {
+			setValue('AccountType', 'WALLET', { shouldValidate: true });
+			return;
+		}
+
+		if (selectedAccountType === 'WALLET') {
+			setValue('AccountType', '', { shouldValidate: true });
+		}
+	}, [selectedAccountType, selectedPaymentMethod, setValue]);
 
 	const launchQuery = useMutation({
 		mutationFn: createLaunches,
@@ -105,10 +117,7 @@ export default function NewLaunchForm() {
 		<Card className='flex-1 bg-transparent overflow-auto'>
 			<CardContent>
 				{launchQuery.isError && (
-					<div className='text-red-500 text-sm mb-3'>
-						{(launchQuery.error as AxiosError<{ message: string }>)?.response?.data?.message ??
-							'Erro ao criar lançamento, tente novamente'}
-					</div>
+					<div className='text-red-500 text-sm mb-3'>Erro ao criar lançamento, tente novamente</div>
 				)}
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<FieldGroup>
@@ -125,10 +134,14 @@ export default function NewLaunchForm() {
 								control={control}
 								launchType={selectedLaunchType}
 							/>
-							<AccountTypeField control={control} />
+							<AccountTypeField
+								control={control}
+								disabled={selectedPaymentMethod === 'MONEY'}
+								showWallet={selectedPaymentMethod === 'MONEY'}
+							/>
 						</div>
 
-						{selectedPaymentMethod === 'CREDIT_CARD' && (
+						{selectedPaymentMethod === 'CREDIT' && (
 							<InstallmentsField
 								control={control}
 								enabled={installmentsEnabled}

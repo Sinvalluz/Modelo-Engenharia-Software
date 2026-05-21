@@ -2,7 +2,7 @@ import { type Control, Controller, type UseFormSetValue, useWatch } from 'react-
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import type { LaunchFormData } from '../../types/launches.type';
+import type { LaunchFormData } from '../../schemas/launch.schema';
 import { formatInstallmentValue } from '../../utils/formatInstallmentValue';
 
 interface InstallmentsFieldsProps {
