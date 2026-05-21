@@ -2,7 +2,7 @@ import { TrendingDown, TrendingUp } from 'lucide-react';
 import { type Control, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import type { LaunchFormData } from '../../types/launches.type';
+import type { LaunchFormData } from '../../schemas/launch.schema';
 
 interface LaunchTypeFieldProps {
 	control: Control<LaunchFormData>;

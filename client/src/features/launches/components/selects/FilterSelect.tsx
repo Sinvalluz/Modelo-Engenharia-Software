@@ -10,23 +10,35 @@ import {
 } from '@/components/ui/select';
 
 type Value = {
-	id: number;
+	id: number | string;
 	item: string;
+	value?: string;
 };
 
 interface FilterSelectProps {
 	label: string;
 	firstValueSelect: string;
 	valuesSelects: Value[];
+	value: string;
+	onValueChange: (value: string) => void;
 }
 
-export default function FilterSelect({ label, firstValueSelect, valuesSelects }: FilterSelectProps) {
+export default function FilterSelect({
+	label,
+	firstValueSelect,
+	valuesSelects,
+	value,
+	onValueChange,
+}: FilterSelectProps) {
 	return (
 		<div className='flex-1 space-y-2'>
 			<Label htmlFor={label}>{label}</Label>
-			<Select>
+			<Select
+				value={value}
+				onValueChange={onValueChange}
+			>
 				<SelectTrigger
-					className='w-full p-4'
+					className='h-12 w-full px-4 py-0'
 					id={label}
 				>
 					<SelectValue placeholder={firstValueSelect} />
@@ -37,7 +49,7 @@ export default function FilterSelect({ label, firstValueSelect, valuesSelects }:
 						{valuesSelects.map((value) => (
 							<SelectItem
 								key={value.id}
-								value={value.item}
+								value={value.value ?? value.item}
 							>
 								{value.item}
 							</SelectItem>

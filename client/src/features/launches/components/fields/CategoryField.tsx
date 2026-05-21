@@ -3,7 +3,7 @@ import { type Control, Controller } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import findAllCategories from '@/lib/findAllCategories';
-import type { LaunchFormData } from '../../types/launches.type';
+import type { LaunchFormData } from '../../schemas/launch.schema';
 
 interface CategoryFieldProps {
 	control: Control<LaunchFormData>;
