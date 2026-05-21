@@ -1,5 +1,7 @@
+import type { CategoryType } from '@/types/category';
+
 export type CreateLaunchRequestDto = {
-	type: string;
+	type: CategoryType;
 	value: number;
 	date: string;
 	categoryId: string;
@@ -14,7 +16,7 @@ export type CreateLaunchResponse = {
 	id: string;
 	userId: string;
 	categoryId: string;
-	type: string;
+	type: CategoryType;
 	value: string;
 	date: string;
 	description: string;
@@ -29,7 +31,7 @@ export type Launch = {
 	id: string;
 	userId: string;
 	categoryId: string;
-	type: string;
+	type: CategoryType;
 	value: string;
 	date: string;
 	description: string;

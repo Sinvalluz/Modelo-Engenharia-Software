@@ -73,6 +73,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
 							path: paths.app.newLaunch.path,
 							lazy: () => import('./routes/app/NewLaunch').then(convert(queryClient)),
 						},
+						{
+							path: paths.app.editLaunch.path,
+							lazy: () => import('./routes/app/EditLaunch').then(convert(queryClient)),
+						},
 					],
 				},
 				{

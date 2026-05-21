@@ -14,6 +14,8 @@ import { paths } from '@/config/paths';
 import { useAuth } from '@/providers/AuthProvider';
 import { type LaunchFormData, launchFormSchema } from '../../schemas/launch.schema';
 import createLaunches from '../../services/createLaunches';
+import updateLaunches from '../../services/updateLaunches';
+import type { CreateLaunchRequestDto, Launch } from '../../types/launches.type';
 import AccountTypeField from '../fields/AccountTypeField';
 import CategoryField from '../fields/CategoryField';
 import DateField from '../fields/DateField';
@@ -23,21 +25,61 @@ import LaunchTypeField from '../fields/LaunchTypeField';
 import MoneyValueField from '../fields/MoneyValueField';
 import PaymentTypeField from '../fields/PaymentTypeField';
 
-export default function NewLaunchForm() {
+type NewLaunchFormProps = {
+	launch?: Launch;
+	mode?: 'create' | 'edit';
+};
+
+const emptyDefaultValues: LaunchFormData = {
+	type: '',
+	value: '',
+	date: '',
+	categoryId: '',
+	description: '',
+	paymentMethod: '',
+	AccountType: '',
+	installments_quantity: '',
+};
+
+function formatMoneyValue(value?: string) {
+	const parsedValue = Number(value);
+
+	if (Number.isNaN(parsedValue)) return '';
+
+	return new Intl.NumberFormat('pt-BR', {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	}).format(parsedValue);
+}
+
+function formatDateValue(value?: string) {
+	if (!value) return '';
+
+	return value.slice(0, 10);
+}
+
+function getDefaultValues(launch?: Launch): LaunchFormData {
+	if (!launch) return emptyDefaultValues;
+
+	return {
+		type: launch.type,
+		value: formatMoneyValue(launch.value),
+		date: formatDateValue(launch.date),
+		categoryId: launch.categoryId,
+		description: launch.description,
+		paymentMethod: launch.paymentMethod,
+		AccountType: launch.account,
+		installments_quantity: launch.installmentsQuantity > 1 ? String(launch.installmentsQuantity) : '',
+	};
+}
+
+export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchFormProps) {
 	const { control, handleSubmit, reset, setValue } = useForm<LaunchFormData>({
 		resolver: zodResolver(launchFormSchema),
-		defaultValues: {
-			type: undefined,
-			value: '',
-			date: '',
-			categoryId: '',
-			description: '',
-			paymentMethod: '',
-			AccountType: '',
-			installments_quantity: '',
-		},
+		defaultValues: getDefaultValues(launch),
 	});
-	const [installmentsEnabled, setInstallmentsEnabled] = useState(false);
+	const isEditMode = mode === 'edit';
+	const [installmentsEnabled, setInstallmentsEnabled] = useState((launch?.installmentsQuantity ?? 1) > 1);
 	const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 	const selectedLaunchType = useWatch({ control, name: 'type' });
 	const selectedPaymentMethod = useWatch({ control, name: 'paymentMethod' });
@@ -45,6 +87,11 @@ export default function NewLaunchForm() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { user } = useAuth();
+
+	useEffect(() => {
+		reset(getDefaultValues(launch));
+		setInstallmentsEnabled((launch?.installmentsQuantity ?? 1) > 1);
+	}, [launch, reset]);
 
 	useEffect(() => {
 		const incomePaymentMethods = ['DEPOSIT', 'PIX', 'TRANSFER', 'MONEY'];
@@ -78,12 +125,41 @@ export default function NewLaunchForm() {
 		}
 	}, [selectedAccountType, selectedPaymentMethod, setValue]);
 
-	const launchQuery = useMutation({
-		mutationFn: createLaunches,
+	const launchMutation = useMutation({
+		mutationFn: (data: LaunchFormData) => {
+			const value = Number(
+				data.value
+					.replace(/\./g, '')
+					.replace(',', '.')
+					.replace(/[^\d.-]/g, ''),
+			);
+
+			const payload: Omit<CreateLaunchRequestDto, 'userId'> = {
+				type: data.type as CreateLaunchRequestDto['type'],
+				value,
+				date: data.date,
+				categoryId: data.categoryId,
+				description: data.description,
+				paymentMethod: data.paymentMethod,
+				account: data.AccountType,
+				installmentsQuantity: Number(data.installments_quantity) || 1,
+			};
+
+			if (isEditMode) {
+				return updateLaunches({ id: launch!.id, data: payload });
+			}
+
+			return createLaunches({
+				...payload,
+				userId: user!.id,
+			});
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['launches'] });
-			reset();
-			setInstallmentsEnabled(false);
+			if (!isEditMode) {
+				reset();
+				setInstallmentsEnabled(false);
+			}
 			setSuccessDialogOpen(true);
 		},
 		onError: (error: AxiosError) => {
@@ -92,32 +168,16 @@ export default function NewLaunchForm() {
 	});
 
 	function onSubmit(data: LaunchFormData) {
-		const value = Number(
-			data.value
-				.replace(/\./g, '')
-				.replace(',', '.')
-				.replace(/[^\d.-]/g, ''),
-		);
-
-		const payload = {
-			userId: user!.id,
-			type: data.type,
-			value,
-			date: data.date,
-			categoryId: data.categoryId,
-			description: data.description,
-			paymentMethod: data.paymentMethod,
-			account: data.AccountType,
-			installmentsQuantity: Number(data.installments_quantity) || 1,
-		};
-		launchQuery.mutate(payload);
+		launchMutation.mutate(data);
 	}
 
 	return (
 		<Card className='flex-1 bg-transparent overflow-auto'>
 			<CardContent>
-				{launchQuery.isError && (
-					<div className='text-red-500 text-sm mb-3'>Erro ao criar lançamento, tente novamente</div>
+				{launchMutation.isError && (
+					<div className='text-red-500 text-sm mb-3'>
+						Erro ao {isEditMode ? 'editar' : 'criar'} lançamento, tente novamente
+					</div>
 				)}
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<FieldGroup>
@@ -167,10 +227,16 @@ export default function NewLaunchForm() {
 							</Button>
 							<Button
 								type='submit'
-								disabled={launchQuery.isPending}
+								disabled={launchMutation.isPending}
 								className='cursor-pointer bg-[#1f7a6b] hover:bg-[#2fae8f] h-10 text-white'
 							>
-								{launchQuery.isPending ? <Spinner /> : 'Salvar Lançamento'}
+								{launchMutation.isPending ? (
+									<Spinner />
+								) : isEditMode ? (
+									'Salvar alterações'
+								) : (
+									'Salvar Lançamento'
+								)}
 							</Button>
 						</div>
 					</FieldGroup>
@@ -185,7 +251,7 @@ export default function NewLaunchForm() {
 						<div className='flex size-14 items-center justify-center rounded-full bg-green-100 text-green-700'>
 							<CircleCheck className='size-8' />
 						</div>
-						<DialogTitle>Lançamento salvo com sucesso!</DialogTitle>
+						<DialogTitle>Lançamento {isEditMode ? 'atualizado' : 'salvo'} com sucesso!</DialogTitle>
 						<DialogDescription>O saldo foi atualizado automaticamente.</DialogDescription>
 					</DialogHeader>
 				</DialogContent>
