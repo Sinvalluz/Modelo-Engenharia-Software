@@ -143,7 +143,7 @@ export default function LaunchesCard({ data }: LaunchesCardProps) {
 									{formatLaunchDate(launch.date)}
 								</TableCell>
 								<TableCell>{launch.description}</TableCell>
-								<TableCell>{launch.categoryId}</TableCell>
+								<TableCell>{launch.category.name}</TableCell>
 								<TableCell className='py-3'>
 									<span
 										className={`inline-flex rounded-full w-24 py-1 justify-center ${

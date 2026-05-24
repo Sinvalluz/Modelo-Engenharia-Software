@@ -61,7 +61,7 @@ export default function EditLaunchForm({ launch }: EditLaunchFormProps) {
 			type: launch.type,
 			value: formatMoneyValue(launch.value),
 			date: formatDateValue(launch.date),
-			categoryId: launch.categoryId,
+			categoryId: launch.category.id,
 			description: launch.description,
 		},
 	});

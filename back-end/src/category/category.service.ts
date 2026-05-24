@@ -8,12 +8,15 @@ import { JwtUserPayload } from '../types';
 export class CategoryService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(createCategoryDto: CreateCategoryDto) {
-		const existingCategory = await this.prisma.category.findFirst({
-			where: { userId: createCategoryDto.userId, name: createCategoryDto.name },
-		});
-		if (existingCategory)
-			throw new ConflictException('Categoria já existente. Caso queira criar uma nova, utilize outro nome.');
+  async create(createCategoryDto: CreateCategoryDto, authenticatedUser: JwtUserPayload) {
+    if(createCategoryDto.userId !== authenticatedUser.id && authenticatedUser.role !== 'ADMIN'){
+      throw new ForbiddenException('Acesso negado. Não é permitido utilizar o ID de outro usuário.')
+    }
+
+    const existingCategory = await this.prisma.category.findFirst({
+      where: { userId: createCategoryDto.userId, name: createCategoryDto.name }
+    })
+    if (existingCategory) throw new ConflictException('Categoria já existente. Caso queira criar uma nova, utilize outro nome.')
 
 		return this.prisma.category.create({
 			data: {

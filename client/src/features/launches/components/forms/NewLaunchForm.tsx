@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { CircleCheck } from 'lucide-react';
 import { useState } from 'react';
@@ -15,7 +15,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import type { CategoryType } from '@/types/category';
 import { type LaunchFormData, launchFormSchema } from '../../schemas/launch.schema';
 import createLaunches from '../../services/createLaunches';
-import type { CreateLaunchRequestDto } from '../../types/launches.type';
+import type { LaunchRequestDto } from '../../types/launches.type';
 import CategoryField from '../fields/CategoryField';
 import DateField from '../fields/DateField';
 import DescriptionField from '../fields/DescriptionField';
@@ -25,6 +25,7 @@ import MoneyValueField from '../fields/MoneyValueField';
 export default function NewLaunchForm() {
 	const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const { user } = useAuth();
 	const { control, handleSubmit, reset } = useForm<LaunchFormData>({
 		resolver: zodResolver(launchFormSchema),
@@ -40,6 +41,8 @@ export default function NewLaunchForm() {
 	const launchMutation = useMutation({
 		mutationFn: createLaunches,
 		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['launches'] });
+			launchMutation.reset();
 			setSuccessDialogOpen(true);
 		},
 		onError: (error: AxiosError) => {
@@ -55,7 +58,7 @@ export default function NewLaunchForm() {
 				.replace(/[^\d.-]/g, ''),
 		);
 
-		const payload: CreateLaunchRequestDto = {
+		const payload: LaunchRequestDto = {
 			userId: user!.id,
 			categoryId: data.categoryId,
 			type: data.type as CategoryType,
@@ -113,7 +116,13 @@ export default function NewLaunchForm() {
 			</CardContent>
 			<Dialog
 				open={successDialogOpen}
-				onOpenChange={setSuccessDialogOpen}
+				onOpenChange={(open) => {
+					setSuccessDialogOpen(open);
+
+					if (!open) {
+						navigate(paths.app.launches.getHref());
+					}
+				}}
 			>
 				<DialogContent className='text-center sm:max-w-md'>
 					<DialogHeader className='items-center'>
