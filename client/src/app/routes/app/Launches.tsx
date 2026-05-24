@@ -77,7 +77,7 @@ export default function LaunchesRoute() {
 		];
 	}, [sortedLaunches]);
 	const categoryOptions = useMemo(() => {
-		const categories = new Set(sortedLaunches.map((launch) => launch.categoryId).filter(Boolean));
+		const categories = new Set(sortedLaunches.map((launch) => launch.category.name).filter(Boolean));
 
 		return [
 			{ id: 'all', item: 'Todas', value: 'all' },
@@ -92,7 +92,7 @@ export default function LaunchesRoute() {
 				normalizedSearch.length === 0 ||
 				launch.description.toLocaleLowerCase('pt-BR').includes(normalizedSearch);
 			const matchesPeriod = filters.period === 'all' || getMonthKey(launch.date) === filters.period;
-			const matchesCategory = filters.category === 'all' || launch.categoryId === filters.category;
+			const matchesCategory = filters.category === 'all' || launch.category.name === filters.category;
 			const matchesType = filters.type === 'all' || launch.type === filters.type;
 
 			return matchesSearch && matchesPeriod && matchesCategory && matchesType;

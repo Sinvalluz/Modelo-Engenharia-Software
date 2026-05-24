@@ -41,7 +41,6 @@ export default function CategoryField({ control }: CategoryFieldProps) {
 										{category.name}
 									</SelectItem>
 								))}
-								<SelectItem value='teste'>teste</SelectItem>
 							</SelectGroup>
 						</SelectContent>
 					</Select>

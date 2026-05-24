@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -54,7 +54,7 @@ export class TransactionController {
 		type: CreateTransactionDto,
 	})
 	@UseGuards(UserGuard)
-	@Patch(':id')
+	@Put(':id')
 	update(
 		@Param('id') id: string,
 		@Body() updateTransactionDto: UpdateTransactionDto,

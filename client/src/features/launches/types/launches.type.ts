@@ -26,7 +26,7 @@ export type CreateLaunchResponse = {
 export type Launch = {
 	id: string;
 	userId: string;
-	categoryId: string;
+	category: { id: string; name: string; color: string };
 	type: LaunchType;
 	value: string;
 	date: string;
