@@ -6,6 +6,7 @@ export class CreateCategoryDto {
 	@ApiProperty({
 		description: 'Nome da categoria',
 		example: 'Lazer',
+        required: true
 	})
 	@IsString()
 	@IsNotEmpty({ message: 'A categoria deve ter um nome.' })
@@ -14,6 +15,7 @@ export class CreateCategoryDto {
 	@ApiProperty({
 		description: 'Cor para representar a categoria',
 		example: '#3B82F6',
+        required: true
 	})
 	@IsHexColor({
 		message: 'Informe uma cor válida em hexadecimal (ex: #FFFFFF)',
@@ -25,6 +27,7 @@ export class CreateCategoryDto {
 		description: 'Tipo de categoria',
 		example: '"INCOME" | "EXPENSES"',
 		enum: CategoryType,
+        required: true
 	})
 	@IsEnum(CategoryType, {
 		message: 'O tipo deve ser "INCOME" ou "EXPENSES".',
@@ -35,6 +38,7 @@ export class CreateCategoryDto {
 	@ApiProperty({
 		description: 'ID do usuário dono da categoria',
 		example: 'uuid-do-usuario',
+        required: true
 	})
 	@IsUUID()
 	@IsNotEmpty({ message: 'A categoria deve pertencer a um usuário.' })
