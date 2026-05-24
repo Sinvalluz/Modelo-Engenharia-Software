@@ -1,15 +1,12 @@
 import type { CategoryType } from '@/types/category';
 
 export type CreateLaunchRequestDto = {
+	userId: string;
+	categoryId: string;
 	type: CategoryType;
 	value: number;
 	date: string;
-	categoryId: string;
 	description: string;
-	paymentMethod: string;
-	account: string;
-	installmentsQuantity: number;
-	userId: string;
 };
 
 export type CreateLaunchResponse = {
@@ -20,9 +17,6 @@ export type CreateLaunchResponse = {
 	value: string;
 	date: string;
 	description: string;
-	paymentMethod: string;
-	account: string;
-	installmentsQuantity: number;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -35,9 +29,6 @@ export type Launch = {
 	value: string;
 	date: string;
 	description: string;
-	paymentMethod: string;
-	account: string;
-	installmentsQuantity: number;
 	createdAt: string;
 	updatedAt: string;
 };

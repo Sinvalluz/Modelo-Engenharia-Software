@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { CircleCheck } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,154 +12,34 @@ import { FieldGroup } from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { useAuth } from '@/providers/AuthProvider';
+import type { CategoryType } from '@/types/category';
 import { type LaunchFormData, launchFormSchema } from '../../schemas/launch.schema';
 import createLaunches from '../../services/createLaunches';
-import updateLaunches from '../../services/updateLaunches';
-import type { CreateLaunchRequestDto, Launch } from '../../types/launches.type';
-import AccountTypeField from '../fields/AccountTypeField';
+import type { CreateLaunchRequestDto } from '../../types/launches.type';
 import CategoryField from '../fields/CategoryField';
 import DateField from '../fields/DateField';
 import DescriptionField from '../fields/DescriptionField';
-import InstallmentsField from '../fields/InstallmentsField';
 import LaunchTypeField from '../fields/LaunchTypeField';
 import MoneyValueField from '../fields/MoneyValueField';
-import PaymentTypeField from '../fields/PaymentTypeField';
 
-type NewLaunchFormProps = {
-	launch?: Launch;
-	mode?: 'create' | 'edit';
-};
-
-const emptyDefaultValues: LaunchFormData = {
-	type: '',
-	value: '',
-	date: '',
-	categoryId: '',
-	description: '',
-	paymentMethod: '',
-	AccountType: '',
-	installments_quantity: '',
-};
-
-function formatMoneyValue(value?: string) {
-	const parsedValue = Number(value);
-
-	if (Number.isNaN(parsedValue)) return '';
-
-	return new Intl.NumberFormat('pt-BR', {
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-	}).format(parsedValue);
-}
-
-function formatDateValue(value?: string) {
-	if (!value) return '';
-
-	return value.slice(0, 10);
-}
-
-function getDefaultValues(launch?: Launch): LaunchFormData {
-	if (!launch) return emptyDefaultValues;
-
-	return {
-		type: launch.type,
-		value: formatMoneyValue(launch.value),
-		date: formatDateValue(launch.date),
-		categoryId: launch.categoryId,
-		description: launch.description,
-		paymentMethod: launch.paymentMethod,
-		AccountType: launch.account,
-		installments_quantity: launch.installmentsQuantity > 1 ? String(launch.installmentsQuantity) : '',
-	};
-}
-
-export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchFormProps) {
-	const { control, handleSubmit, reset, setValue } = useForm<LaunchFormData>({
-		resolver: zodResolver(launchFormSchema),
-		defaultValues: getDefaultValues(launch),
-	});
-	const isEditMode = mode === 'edit';
-	const [installmentsEnabled, setInstallmentsEnabled] = useState((launch?.installmentsQuantity ?? 1) > 1);
+export default function NewLaunchForm() {
 	const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-	const selectedLaunchType = useWatch({ control, name: 'type' });
-	const selectedPaymentMethod = useWatch({ control, name: 'paymentMethod' });
-	const selectedAccountType = useWatch({ control, name: 'AccountType' });
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
 	const { user } = useAuth();
-
-	useEffect(() => {
-		reset(getDefaultValues(launch));
-		setInstallmentsEnabled((launch?.installmentsQuantity ?? 1) > 1);
-	}, [launch, reset]);
-
-	useEffect(() => {
-		const incomePaymentMethods = ['DEPOSIT', 'PIX', 'TRANSFER', 'MONEY'];
-
-		if (
-			selectedLaunchType === 'INCOME' &&
-			selectedPaymentMethod &&
-			!incomePaymentMethods.includes(selectedPaymentMethod)
-		) {
-			setValue('paymentMethod', '');
-			setInstallmentsEnabled(false);
-			setValue('installments_quantity', '');
-		}
-	}, [selectedLaunchType, selectedPaymentMethod, setValue]);
-
-	useEffect(() => {
-		if (selectedPaymentMethod !== 'CREDIT' && installmentsEnabled) {
-			setInstallmentsEnabled(false);
-			setValue('installments_quantity', '');
-		}
-	}, [installmentsEnabled, selectedPaymentMethod, setValue]);
-
-	useEffect(() => {
-		if (selectedPaymentMethod === 'MONEY') {
-			setValue('AccountType', 'WALLET', { shouldValidate: true });
-			return;
-		}
-
-		if (selectedAccountType === 'WALLET') {
-			setValue('AccountType', '', { shouldValidate: true });
-		}
-	}, [selectedAccountType, selectedPaymentMethod, setValue]);
+	const { control, handleSubmit, reset } = useForm<LaunchFormData>({
+		resolver: zodResolver(launchFormSchema),
+		defaultValues: {
+			type: '',
+			value: '',
+			date: '',
+			categoryId: '',
+			description: '',
+		},
+	});
 
 	const launchMutation = useMutation({
-		mutationFn: (data: LaunchFormData) => {
-			const value = Number(
-				data.value
-					.replace(/\./g, '')
-					.replace(',', '.')
-					.replace(/[^\d.-]/g, ''),
-			);
-
-			const payload: Omit<CreateLaunchRequestDto, 'userId'> = {
-				type: data.type as CreateLaunchRequestDto['type'],
-				value,
-				date: data.date,
-				categoryId: data.categoryId,
-				description: data.description,
-				paymentMethod: data.paymentMethod,
-				account: data.AccountType,
-				installmentsQuantity: Number(data.installments_quantity) || 1,
-			};
-
-			if (isEditMode) {
-				return updateLaunches({ id: launch!.id, data: payload });
-			}
-
-			return createLaunches({
-				...payload,
-				userId: user!.id,
-			});
-		},
+		mutationFn: createLaunches,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['launches'] });
-			if (!isEditMode) {
-				reset();
-				setInstallmentsEnabled(false);
-			}
 			setSuccessDialogOpen(true);
 		},
 		onError: (error: AxiosError) => {
@@ -168,16 +48,30 @@ export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchForm
 	});
 
 	function onSubmit(data: LaunchFormData) {
-		launchMutation.mutate(data);
+		const value = Number(
+			data.value
+				.replace(/\./g, '')
+				.replace(',', '.')
+				.replace(/[^\d.-]/g, ''),
+		);
+
+		const payload: CreateLaunchRequestDto = {
+			userId: user!.id,
+			categoryId: data.categoryId,
+			type: data.type as CategoryType,
+			value: value,
+			date: data.date,
+			description: data.description,
+		};
+
+		launchMutation.mutate(payload);
 	}
 
 	return (
 		<Card className='flex-1 bg-transparent overflow-auto'>
 			<CardContent>
 				{launchMutation.isError && (
-					<div className='text-red-500 text-sm mb-3'>
-						Erro ao {isEditMode ? 'editar' : 'criar'} lançamento, tente novamente
-					</div>
+					<div className='text-red-500 text-sm mb-3'>Erro ao criar lançamento, tente novamente</div>
 				)}
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<FieldGroup>
@@ -189,26 +83,7 @@ export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchForm
 						</div>
 
 						<DescriptionField control={control} />
-						<div className='flex flex-col gap-5 lg:flex-row'>
-							<PaymentTypeField
-								control={control}
-								launchType={selectedLaunchType}
-							/>
-							<AccountTypeField
-								control={control}
-								disabled={selectedPaymentMethod === 'MONEY'}
-								showWallet={selectedPaymentMethod === 'MONEY'}
-							/>
-						</div>
 
-						{selectedPaymentMethod === 'CREDIT' && (
-							<InstallmentsField
-								control={control}
-								enabled={installmentsEnabled}
-								setEnabled={setInstallmentsEnabled}
-								setValue={setValue}
-							/>
-						)}
 						<div className='flex gap-2 items-center mt-2'>
 							<span className='text-red-500'>*</span>
 							<span className='text-secondary-foreground'>Campos obrigatórios</span>
@@ -219,7 +94,7 @@ export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchForm
 								className='h-10 cursor-pointer bg-transparent hover:bg-zinc-200 text-secondary-foreground border border-secondary-foreground dark:bg-white dark:hover:bg-zinc-300'
 								onClick={() => {
 									reset();
-									setInstallmentsEnabled(false);
+
 									navigate(paths.app.launches.getHref());
 								}}
 							>
@@ -230,13 +105,7 @@ export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchForm
 								disabled={launchMutation.isPending}
 								className='cursor-pointer bg-[#1f7a6b] hover:bg-[#2fae8f] h-10 text-white'
 							>
-								{launchMutation.isPending ? (
-									<Spinner />
-								) : isEditMode ? (
-									'Salvar alterações'
-								) : (
-									'Salvar Lançamento'
-								)}
+								{launchMutation.isPending ? <Spinner /> : 'Salvar Lançamento'}
 							</Button>
 						</div>
 					</FieldGroup>
@@ -251,7 +120,7 @@ export default function NewLaunchForm({ launch, mode = 'create' }: NewLaunchForm
 						<div className='flex size-14 items-center justify-center rounded-full bg-green-100 text-green-700'>
 							<CircleCheck className='size-8' />
 						</div>
-						<DialogTitle>Lançamento {isEditMode ? 'atualizado' : 'salvo'} com sucesso!</DialogTitle>
+						<DialogTitle>Lançamento salvo com sucesso!</DialogTitle>
 						<DialogDescription>O saldo foi atualizado automaticamente.</DialogDescription>
 					</DialogHeader>
 				</DialogContent>
