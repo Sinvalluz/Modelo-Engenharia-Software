@@ -42,7 +42,6 @@ model Launch {
   value                Decimal
   date                 DateTime
   description          String
-  installmentsQuantity Int           @map("installments_quantity")
   createdAt            DateTime      @default(now()) @map("created_at")
   updatedAt            DateTime      @updatedAt @map("updated_at")
   category             Category      @relation(fields: [categoryId], references: [id])
@@ -57,11 +56,6 @@ enum CategoryType {
 enum launchType {
   INCOME
   EXPENSES
-}
-
-enum AccountType {
-  CURRENT
-  SAVINGS
 }
 
 enum Role {

@@ -11,7 +11,7 @@ export class TransactionService {
   async create(createTransactionDto: CreateTransactionDto, authenticatedUser: JwtUserPayload) {
     let value = createTransactionDto.value
     if (value <= 0) {
-      throw new UnprocessableEntityException(`O valor ${value} não é aceito como um valor válido. Por favor insira um número acima de 0.`)
+      throw new UnprocessableEntityException(`O valor ${value} não é aceito como um valor válido. Por favor insira um número igual ou acima de 0.`)
     }
 
     return this.prisma.launch.create({
@@ -22,9 +22,6 @@ export class TransactionService {
 				date: new Date(createTransactionDto.date),
 
 				description: createTransactionDto.description,
-				paymentMethod: createTransactionDto.paymentMethod,
-				account: createTransactionDto.account,
-				installmentsQuantity: createTransactionDto.installmentsQuantity ?? 1,
 				category: {
 					connect: {
 						id: createTransactionDto.categoryId,
