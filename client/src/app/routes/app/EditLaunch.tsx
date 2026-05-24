@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
-import NewLaunchForm from '@/features/launches/components/forms/NewLaunchForm';
+import EditLaunchForm from '@/features/launches/components/forms/EditLaunchForm';
 import listAllLaunches from '@/features/launches/services/listAllLaunches';
 import type { Launch } from '@/features/launches/types/launches.type';
 
@@ -67,10 +67,7 @@ export default function EditLaunchRoute() {
 			)}
 			{launchQuery.isSuccess &&
 				(launch ? (
-					<NewLaunchForm
-						mode='edit'
-						launch={launch}
-					/>
+					<EditLaunchForm launch={launch} />
 				) : (
 					<div className='rounded-xl border p-4 text-sm text-secondary-foreground'>
 						Lançamento não encontrado.
