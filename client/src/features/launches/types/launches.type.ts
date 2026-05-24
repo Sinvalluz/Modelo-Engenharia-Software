@@ -1,9 +1,11 @@
 import type { CategoryType } from '@/types/category';
 
-export type CreateLaunchRequestDto = {
+export type LaunchType = 'INCOME' | 'EXPENSES';
+
+export type LaunchRequestDto = {
 	userId: string;
 	categoryId: string;
-	type: CategoryType;
+	type: LaunchType;
 	value: number;
 	date: string;
 	description: string;
@@ -25,7 +27,7 @@ export type Launch = {
 	id: string;
 	userId: string;
 	categoryId: string;
-	type: CategoryType;
+	type: LaunchType;
 	value: string;
 	date: string;
 	description: string;
