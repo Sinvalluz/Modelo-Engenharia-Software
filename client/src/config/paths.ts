@@ -22,8 +22,20 @@ export const paths = {
 			getHref: () => '/app',
 		},
 		dashboard: {
-			path: '',
-			getHref: () => '/app',
+			path: 'dashboard',
+			getHref: () => '/app/dashboard',
+		},
+		launches: {
+			path: 'launches',
+			getHref: () => '/app/launches',
+		},
+		newLaunch: {
+			path: 'launches/new',
+			getHref: () => '/app/launches/new',
+		},
+		editLaunch: {
+			path: 'launches/:launchId/edit',
+			getHref: (launchId: string) => `/app/launches/${launchId}/edit`,
 		},
 	},
 } as const;

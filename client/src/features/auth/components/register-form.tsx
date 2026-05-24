@@ -8,6 +8,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { registerWithEmailAndPassword } from '@/lib/api-client';
 import { type FormRegisterData, FormRegisterDataSchema } from '@/types/user';
+import { normalizeMonthlyIncome } from '../utils/normalizeMonthlyIncome';
+import { normalizePhone } from '../utils/normalizePhone';
 import HookFormInput from './hook-form-input';
 
 interface RegisterFormProps extends React.ComponentProps<'form'> {}
@@ -19,6 +21,7 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 			name: '',
 			email: '',
 			password: '',
+			phoneNumber: '',
 			monthlyIncome: '',
 		},
 	});
@@ -26,17 +29,23 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 	const navigate = useNavigate();
 
 	const registering = useMutation({
-		mutationFn: (data: FormRegisterData) => registerWithEmailAndPassword(data),
-		onSuccess: (data) => {
-			console.log(data);
-			navigate(paths.app.root.getHref());
+		mutationFn: registerWithEmailAndPassword,
+		onSuccess: () => {
+			navigate(paths.auth.login.getHref());
 		},
 		onError: (error: AxiosError) => {
 			console.error(error.response?.data);
 		},
 	});
+
 	async function onSubmit(data: FormRegisterData) {
-		registering.mutate(data);
+		const payload = {
+			...data,
+			phoneNumber: normalizePhone(data.phoneNumber),
+			monthlyIncome: normalizeMonthlyIncome(data.monthlyIncome),
+		};
+
+		registering.mutate(payload);
 	}
 	return (
 		<form
@@ -51,6 +60,7 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 				placeholder='Digite seu nome'
 				type='text'
 				label='Nome'
+				mask='name'
 			/>
 			<HookFormInput
 				control={control}
@@ -74,15 +84,17 @@ export default function RegisterForm({ ...props }: RegisterFormProps) {
 				name='phoneNumber'
 				placeholder='(71) 99999-9999'
 				type='text'
-				label='Telefone'
+				label='Telefone (Opcional)'
+				mask='phone'
 			/>
 			<HookFormInput
 				control={control}
 				id='monthlyIncome'
 				name='monthlyIncome'
+				mask='currency'
 				placeholder='Digite seus ganhos mensais'
 				type='text'
-				label='Ganhos mensais'
+				label='Ganhos mensais (Opcional)'
 			/>
 			{registering.isError && (
 				<p className='text-red-500 text-sm'>

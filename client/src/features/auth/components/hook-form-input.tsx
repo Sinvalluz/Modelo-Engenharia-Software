@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { type Control, Controller, type FieldValues, type Path } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { maskCurrency } from '../utils/maskCurrency';
+import { maskName } from '../utils/maskName';
+import { maskPhone } from '../utils/maskPhone';
 
 interface HookFormInputProps<T extends FieldValues> {
 	control: Control<T>;
@@ -11,6 +14,7 @@ interface HookFormInputProps<T extends FieldValues> {
 	placeholder?: string;
 	label: string;
 	type: React.HTMLInputTypeAttribute;
+	mask?: 'phone' | 'currency' | 'name';
 }
 
 export default function HookFormInput<T extends FieldValues>({
@@ -20,7 +24,20 @@ export default function HookFormInput<T extends FieldValues>({
 	name,
 	placeholder,
 	label,
+	mask,
 }: HookFormInputProps<T>) {
+	function applyMask(value: string, previousValue?: string) {
+		switch (mask) {
+			case 'phone':
+				return maskPhone(value, previousValue);
+			case 'currency':
+				return maskCurrency(value, previousValue);
+			case 'name':
+				return maskName(value);
+			default:
+				return value;
+		}
+	}
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
 	const isPassword = type === 'password';
@@ -41,6 +58,10 @@ export default function HookFormInput<T extends FieldValues>({
 							placeholder={placeholder}
 							className='h-10 focus-visible:ring-[#1f7a6b]'
 							autoComplete='off'
+							onChange={(e) => {
+								const masked = applyMask(e.target.value, field.value);
+								field.onChange(masked);
+							}}
 							type={inputType}
 						/>
 						{isPassword && (

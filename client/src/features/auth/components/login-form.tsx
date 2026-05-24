@@ -6,16 +6,13 @@ import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
-import { useAuth } from '@/context/AuthContext';
 import { loginWithEmailAndPassword } from '@/lib/api-client';
-import { setToken } from '@/lib/cookies';
 import { type FormLoginData, FormLoginDataSchema } from '@/types/user';
 import HookFormInput from './hook-form-input';
 
 interface LoginFormProps extends React.ComponentProps<'form'> {}
 
 export default function LoginForm({ ...props }: LoginFormProps) {
-	const { saveUser } = useAuth();
 	const { handleSubmit, control } = useForm<FormLoginData>({
 		resolver: zodResolver(FormLoginDataSchema),
 		defaultValues: {
@@ -29,10 +26,8 @@ export default function LoginForm({ ...props }: LoginFormProps) {
 	const redirectTo = searchParams.get('redirectTo');
 
 	const login = useMutation({
-		mutationFn: (data: FormLoginData) => loginWithEmailAndPassword(data),
-		onSuccess: (data) => {
-			setToken(data.data.token);
-			saveUser(data.data.user);
+		mutationFn: loginWithEmailAndPassword,
+		onSuccess: () => {
 			navigate(`${redirectTo ? `${redirectTo}` : paths.app.dashboard.getHref()}`, {
 				replace: true,
 			});
@@ -68,12 +63,12 @@ export default function LoginForm({ ...props }: LoginFormProps) {
 			/>
 			<Link
 				to={'/auth/forgot-password'}
-				className='text-end w-full block text-sm'
+				className='text-end w-full block text-sm text-muted-foreground transition-colors hover:text-foreground'
 			>
 				Esqueceu a senha?
 			</Link>
 			{login.isError && (
-				<p className='text-red-500 text-sm'>
+				<p className='text-destructive text-sm'>
 					{(login.error as AxiosError<{ message: string }>)?.response?.data?.message ??
 						'Erro ao fazer login. Tente novamente.'}
 				</p>

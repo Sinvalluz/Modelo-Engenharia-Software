@@ -1,7 +1,10 @@
 import z from 'zod';
 
 export const FormRegisterDataSchema = z.object({
-	name: z.string().min(1, 'Digite um nome válido'),
+	name: z
+		.string()
+		.min(2, 'Digite um nome válido')
+		.regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'O nome não pode conter números ou símbolos'),
 	email: z.email('Digite um email válido'),
 	password: z
 		.string()
@@ -20,23 +23,20 @@ export const FormRegisterDataSchema = z.object({
 		}),
 	phoneNumber: z
 		.string()
-		.min(10, 'Digite um telefone válido')
-		.refine(
-			(val) => {
-				const numbers = val.replace(/\D/g, '');
-				return numbers.length === 10 || numbers.length === 11;
-			},
-			{ message: 'Digite um telefone brasileiro válido' },
-		),
+		.regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, 'Digite um telefone válido')
+		.optional()
+		.or(z.literal('')),
 	monthlyIncome: z
 		.string()
-		.min(1, 'Digite um valor')
-		.refine((val) => !Number.isNaN(Number(val)) && val.trim() !== '', {
-			message: 'Digite um número válido, se estiver utilizando vírgula, use o ponto',
-		})
-		.refine((val) => Number(val) >= 0, {
-			message: 'O rendimento deve ser maior ou igual a zero',
-		}),
+		.refine((val) => {
+			const clean = val.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+			return !Number.isNaN(Number(clean));
+		}, 'Valor inválido')
+		.refine((val) => {
+			const clean = val.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+			return Number(clean) >= 0;
+		}, 'O valor deve ser maior ou igual a zero')
+		.optional(),
 });
 
 export type FormRegisterData = z.infer<typeof FormRegisterDataSchema>;

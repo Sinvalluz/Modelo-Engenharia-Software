@@ -1,30 +1,53 @@
-import { Body, Controller, Delete, Get, Param, Put, Request, UseGuards, ValidationPipe } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Put,
+	Request,
+	Res,
+	UseGuards,
+	ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/updateUserDto';
 import { UserGuard } from './user.guard';
+import type { Response } from 'express';
 
 import type { AuthenticatedRequest } from '../types';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UserResponseDto } from './dto/UserResponseDto';
 
 @Controller('user')
 export class UserController {
 	constructor(private userService: UserService) {}
 
-	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Busca o usuário logado' })
+	@ApiResponse({
+		status: 200,
+		description: 'Busca o usuário logado com sucesso.',
+		type: UserResponseDto,
+	})
+	@ApiCookieAuth('access_token')
 	@UseGuards(UserGuard)
-	@Get(':id')
-	async findOne(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
-		return await this.userService.findOne(id, req.user);
+	@Get('me')
+	async findOne(@Request() req: AuthenticatedRequest) {
+		return await this.userService.findOne(req.user);
 	}
 
-	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Busca todos os usuários' })
+	@ApiCookieAuth('access_token')
 	@UseGuards(UserGuard)
-	@Get()
+	@Get('all')
 	async findAll(@Request() req: AuthenticatedRequest) {
 		return await this.userService.findAll(req.user);
 	}
 
-	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Atualiza o usuário logado' })
+	@ApiCookieAuth('access_token')
 	@UseGuards(UserGuard)
 	@Put(':id')
 	async update(
@@ -35,10 +58,20 @@ export class UserController {
 		return await this.userService.update(id, updateUserDto, req.user);
 	}
 
-	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Deleta o usuário logado' })
+	@ApiCookieAuth('access_token')
 	@UseGuards(UserGuard)
 	@Delete(':id')
-	async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
-		return await this.userService.remove(id, req.user);
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async remove(
+		@Param('id') id: string,
+		@Request() req: AuthenticatedRequest,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		await this.userService.remove(id, req.user);
+		if (req.user.id === id) {
+			res.clearCookie('access_token');
+		}
+		return;
 	}
 }
