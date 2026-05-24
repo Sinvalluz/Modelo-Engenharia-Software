@@ -33,6 +33,16 @@ Sistema desenvolvido para controle de despesas pessoais, com foco em organizaç�
 - [Daily / Alinhamento – 23/04/2026](./ata/sprint-2/2026-04-23-daily-alinhamento.md)
 - [Daily – 24/04/2026](./ata/sprint-2/2026-04-24-daily.md)
 
+##### Maio/2026
+- [Daily – 11/05/2026](./ata/sprint-2/2026-05-11-daily.md)
+- [Daily – 12/05/2026](./ata/sprint-2/2026-05-12-daily.md)
+- [Daily – 13/05/2026](./ata/sprint-2/2026-05-13-daily.md)
+- [Daily – 14/05/2026](./ata/sprint-2/2026-05-14-daily.md)
+- [Daily – 15/05/2026](./ata/sprint-2/2026-05-15-daily.md)
+- [Daily – 18/05/2026](./ata/sprint-2/2026-05-18-daily.md)
+- [Daily – 19/05/2026](./ata/sprint-2/2026-05-19-daily.md)
+- [Daily – 20/05/2026](./ata/sprint-2/2026-05-20-daily.md)
+
 ---
 
 ### 🧩 Templates
@@ -61,3 +71,4 @@ Sistema desenvolvido para controle de despesas pessoais, com foco em organizaç�
 - Toda documentação de reuniões está centralizada em `docs/ata/`
 - As atas são organizadas por sprint
 - Novos registros devem seguir o template padrão
+- O projeto utiliza versionamento via Git/GitHub

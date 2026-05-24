@@ -2,9 +2,9 @@
 
 ---
 
-## 1. Introdução
+# 1. Introdução
 
-### 1.1 Propósito
+## 1.1 Propósito
 
 Este documento tem como objetivo apresentar a arquitetura do software **Sistema de Controle de Despesas Pessoais (SCDP)**, descrevendo as principais decisões arquiteturais adotadas, bem como as tecnologias e padrões utilizados no desenvolvimento do sistema.
 
@@ -12,54 +12,65 @@ O documento serve como guia para a equipe de desenvolvimento, garantindo padroni
 
 ---
 
-### 1.2 Escopo
+## 1.2 Escopo
 
 O **Sistema de Controle de Despesas Pessoais (SCDP)** é uma aplicação web desenvolvida com o objetivo de permitir que usuários registrem, organizem e acompanhem suas movimentações financeiras de forma simples e eficiente.
 
 A solução contempla funcionalidades como:
 
-- Cadastro e autenticação de usuários  
-- Registro de receitas e despesas  
-- Categorização de gastos  
-- Visualização de saldo  
+- Cadastro e autenticação de usuários
+- Registro de receitas e despesas
+- Categorização de gastos
+- Visualização de saldo
 
-Este documento abrange a definição da arquitetura do sistema, incluindo:
+Este documento abrange:
 
-- Organização em camadas  
-- Tecnologias adotadas  
-- Diretrizes técnicas a serem seguidas pela equipe  
-
----
-
-## 2. Visão Geral da Arquitetura
-
-### 2.1 Sumário da Arquitetura
-
-O sistema será desenvolvido utilizando uma **arquitetura em camadas**, com o objetivo de promover separação de responsabilidades (*Separation of Concerns*), facilitar a manutenção e permitir escalabilidade.
+- Organização em camadas
+- Tecnologias adotadas
+- Diretrizes técnicas da equipe
+- Organização de branches e fluxo de desenvolvimento
 
 ---
 
-### 🔧 Backend
+# 2. Visão Geral da Arquitetura
 
-Será utilizado o framework **NestJS**, com organização modular e divisão em camadas:
+## 2.1 Sumário da Arquitetura
 
-- **Controllers** → recebem requisições HTTP  
-- **Services** → implementam regras de negócio  
-- **Repositories / ORM (Prisma)** → acesso e manipulação de dados  
+O sistema será desenvolvido utilizando uma **arquitetura em camadas**, promovendo separação de responsabilidades (*Separation of Concerns*), facilidade de manutenção e escalabilidade.
 
 ---
 
-### 💻 Frontend
+## 🔧 Backend
 
-- Aplicação web independente  
-- Responsável pela interface com o usuário  
-- Consome a API do backend  
+O backend será desenvolvido utilizando o framework **NestJS**, seguindo organização modular baseada em funcionalidades.
+
+### Estrutura de Camadas
+
+| Camada | Responsabilidade |
+|---|---|
+| Controllers | Receber requisições HTTP |
+| Services | Implementar regras de negócio |
+| Prisma ORM | Persistência e manipulação de dados |
 
 ---
 
-### 🔗 Comunicação
+## 💻 Frontend
 
-A comunicação entre frontend e backend será realizada por meio de uma **API REST**, utilizando:
+O frontend será desenvolvido utilizando:
+
+- React
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- React Query
+
+Responsável pela interface com o usuário e comunicação com a API REST.
+
+---
+
+## 🔗 Comunicação
+
+A comunicação entre frontend e backend ocorrerá através de uma **API REST**, utilizando métodos HTTP:
 
 - `GET`
 - `POST`
@@ -68,54 +79,147 @@ A comunicação entre frontend e backend será realizada por meio de uma **API R
 
 ---
 
-### 2.2 Metas e Restrições
+## 2.2 Metas Arquiteturais
 
-#### 🎯 Metas Arquiteturais
-
-- Garantir uma arquitetura simples e de fácil manutenção  
-- Promover separação clara de responsabilidades  
-- Facilitar escalabilidade futura  
-- Assegurar organização e padronização do código  
-- Permitir integração eficiente entre frontend e backend  
+- Garantir arquitetura simples e organizada
+- Facilitar manutenção e evolução do sistema
+- Promover separação de responsabilidades
+- Permitir integração eficiente entre frontend e backend
+- Facilitar escalabilidade futura
 
 ---
 
-#### ⚙️ Restrições Técnicas
+## 2.3 Restrições Técnicas
 
-- **Linguagens:** JavaScript, TypeScript, SQL  
-- **Backend:** NestJS  
-- **ORM:** Prisma  
-- **Banco de Dados:** PostgreSQL (Supabase)  
-- **Frontend:** React + Vite  
-- **Estilização:** Tailwind CSS + shadcn/ui  
-- **Gerenciamento de estado:** React Query  
-- **Deploy:** Vercel  
-- **Idioma:** Português  
-- **Prazo:** Projeto acadêmico com tempo limitado  
-- **Equipe:**  
-  - 2 Desenvolvedores = Sinval Luz e Guilherme Almeida 
-  - 1 Scrum Master  = Edu Guerreiro
-  - 1 Product Owner = Laís Viana
+| Categoria | Tecnologia |
+|---|---|
+| Linguagens | JavaScript, TypeScript, SQL |
+| Backend | NestJS |
+| ORM | Prisma ORM |
+| Banco de Dados | PostgreSQL (Supabase) |
+| Frontend | React + Vite |
+| Estilização | Tailwind CSS + shadcn/ui |
+| Estado/Requisições | React Query |
+| Deploy | Vercel |
+| Idioma | Português |
 
 ---
 
-## 🧱 Visão Estrutural (Resumo)
+# 🧱 Visão Estrutural
+
+```text
 Frontend (React)
-↓
+        ↓
 API REST (HTTP)
-↓
+        ↓
 Backend (NestJS)
-├── Controllers
-├── Services
-└── Prisma (ORM)
-↓
-Banco de Dados (PostgreSQL - Supabase)
-
+ ┣ Controllers
+ ┣ Services
+ ┗ Prisma ORM
+        ↓
+PostgreSQL (Supabase)
+```
 
 ---
 
-## 📌 Observações
+# 3. Organização de Branches
 
-- A arquitetura foi definida visando simplicidade e evolução gradual  
-- O sistema poderá sofrer ajustes conforme evolução das sprints  
-- Este documento deve ser atualizado conforme decisões arquiteturais futuras  
+## 3.1 Estratégia de Branches
+
+O projeto utiliza organização de branches baseada em funcionalidades, visando melhor controle das entregas e separação das implementações.
+
+### Branch Principal
+
+```bash
+main
+```
+
+---
+
+## 3.2 Padrão de Nomeação
+
+| Tipo | Exemplo |
+|---|---|
+| Feature | `feature/register-and-login-screen` |
+| Feature Backend | `feature/user-crud` |
+| Refactor | `refactor/business-rules-and-dtos` |
+| Fix | `fix/login-validation` |
+
+---
+
+## 3.3 Fluxo de Desenvolvimento
+
+### 📌 Criação de Branch
+
+Antes de iniciar uma nova tarefa:
+
+1. Atualizar a branch `main`
+2. Criar uma branch da funcionalidade
+3. Desenvolver a task isoladamente
+
+### Exemplo
+
+```bash
+git checkout main
+git pull
+git checkout -b feature/register-and-login-screen
+```
+
+---
+
+### 📌 Commits
+
+Os commits devem possuir descrições objetivas e relacionadas à funcionalidade implementada.
+
+### Exemplos
+
+```bash
+feat: create login screen
+feat: add user authentication
+fix: validation error on register form
+refactor: improve transaction service
+```
+
+---
+
+### 📌 Pull Requests
+
+Após finalizar a funcionalidade:
+
+1. Enviar branch para o repositório
+2. Abrir Pull Request
+3. Solicitar revisão
+4. Realizar merge após validação
+
+---
+
+## 3.4 Branches Atuais do Projeto
+
+Atualmente o projeto possui branches relacionadas às seguintes funcionalidades:
+
+- `feature/cruds-transaction-category`
+- `feature/record-of-income-and-expenses`
+- `feature/register-and-login-screen`
+- `feature/user-crud`
+- `refactor/business-rules-and-dtos`
+
+---
+
+# 🔐 Segurança
+
+Devido à natureza sensível dos dados financeiros, o sistema deverá garantir:
+
+- Autenticação individual por usuário
+- Armazenamento seguro de senhas
+- Isolamento de dados por usuário
+- Validação de entradas
+- Proteção contra acessos indevidos
+
+---
+
+# 📌 Observações
+
+- A arquitetura poderá sofrer alterações conforme evolução das sprints
+- O documento deve ser atualizado sempre que houver mudanças estruturais relevantes
+- O fluxo de branches deve ser seguido por toda a equipe
+- O sistema possui finalidade acadêmica

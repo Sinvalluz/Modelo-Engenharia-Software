@@ -42,8 +42,6 @@ model Launch {
   value                Decimal
   date                 DateTime
   description          String
-  paymentMethod        PaymentMethod @map("payment_method")
-  account              AccountType
   installmentsQuantity Int           @map("installments_quantity")
   createdAt            DateTime      @default(now()) @map("created_at")
   updatedAt            DateTime      @updatedAt @map("updated_at")
@@ -59,14 +57,6 @@ enum CategoryType {
 enum launchType {
   INCOME
   EXPENSES
-}
-
-enum PaymentMethod {
-  INSTALLMENTS
-  CREDIT_CARD
-  DEBIT_CARD
-  PIX
-  TRANSFER
 }
 
 enum AccountType {
