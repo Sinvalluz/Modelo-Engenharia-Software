@@ -1,6 +1,7 @@
 # 🚀 Projeto – Sistema de Controle de Despesas Pessoais
 
 ## 📌 Sobre o Projeto
+
 Sistema desenvolvido para controle de despesas pessoais, com foco em organização financeira, categorização de gastos e visualização de dados.
 
 ---
@@ -32,20 +33,31 @@ Sistema desenvolvido para controle de despesas pessoais, com foco em organizaç�
 - [Planning – 22/04/2026](./ata/sprint-2/2026-04-22-planning.md)
 - [Daily / Alinhamento – 23/04/2026](./ata/sprint-2/2026-04-23-daily-alinhamento.md)
 - [Daily – 24/04/2026](./ata/sprint-2/2026-04-24-daily.md)
-
-##### Maio/2026
 - [Daily – 11/05/2026](./ata/sprint-2/2026-05-11-daily.md)
 - [Daily – 12/05/2026](./ata/sprint-2/2026-05-12-daily.md)
-- [Daily – 13/05/2026](./ata/sprint-2/2026-05-13-daily.md)
+- [Review – 13/05/2026](./ata/sprint-2/2026-05-13-review.md)
 - [Daily – 14/05/2026](./ata/sprint-2/2026-05-14-daily.md)
-- [Daily – 15/05/2026](./ata/sprint-2/2026-05-15-daily.md)
-- [Daily – 18/05/2026](./ata/sprint-2/2026-05-18-daily.md)
-- [Daily – 19/05/2026](./ata/sprint-2/2026-05-19-daily.md)
-- [Daily – 20/05/2026](./ata/sprint-2/2026-05-20-daily.md)
+- [Retrospectiva – 15/05/2026](./ata/sprint-2/2026-05-15-retrospectiva.md)
+
+---
+
+#### Sprint 3
+- [Planning – 18/05/2026](./ata/sprint-3/2026-05-18-planning.md)
+- [Daily – 19/05/2026](./ata/sprint-3/2026-05-19-daily.md)
+- [Daily – 20/05/2026](./ata/sprint-3/2026-05-20-daily.md)
+- [Review – 21/05/2026](./ata/sprint-3/2026-05-21-review.md)
+- [Retrospectiva – 22/05/2026](./ata/sprint-3/2026-05-22-retrospectiva.md)
+- [Daily – 25/05/2026](./ata/sprint-3/2026-05-25-daily.md)
+
+---
+
+#### Sprint 4
+- [Planning – 26/05/2026](./ata/sprint-4/2026-05-26-planning.md)
 
 ---
 
 ### 🧩 Templates
+
 - [Template de Ata](./templates/ata-template.md)
 
 ---
