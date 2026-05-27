@@ -7,6 +7,5 @@ type UpdateCategoryParams = {
 };
 
 export default function updateCategory({ id, data }: UpdateCategoryParams) {
-	console.log(data);
 	return api.put<CategoryResponse>(`category/${id}`, data);
 }
