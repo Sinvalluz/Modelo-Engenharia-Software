@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Request, ValidationPipe } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -59,7 +59,7 @@ export class CategoryController {
 	})
 	@ApiBearerAuth()
 	@UseGuards(UserGuard)
-	@Patch(':id')
+	@Put(':id')
 	update(
 		@Param('id') id: string,
 		@Body(new ValidationPipe()) updateCategoryDto: UpdateCategoryDto,
