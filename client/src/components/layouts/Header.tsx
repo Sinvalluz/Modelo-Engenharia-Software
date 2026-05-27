@@ -20,12 +20,12 @@ export default function Header() {
 	}, []);
 
 	return (
-		<div className='flex'>
+		<div>
 			<SideBar
 				open={open}
 				setOpen={setOpen}
 			/>
-			<header className='h-14 border-b flex items-center justify-between px-4 flex-1 md:hidden'>
+			<header className='fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 md:hidden'>
 				<div className='flex items-center gap-2'>
 					<Button
 						className='bg-transparent cursor-pointer p-0'
