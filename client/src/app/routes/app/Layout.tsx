@@ -23,7 +23,7 @@ export default function LayoutRoute({ children }: { children: React.ReactNode })
 		}
 	}, [isSuccess, data?.data, setUser]);
 
-	if (isLoading) return <Spinner />;
+	if (isLoading) return (<div className='min-h-dvh w-full flex items-center justify-center space-x-2'><Spinner /> <p>Carregando dados</p></div>);
 
 	if (isError) {
 		return (
@@ -34,9 +34,9 @@ export default function LayoutRoute({ children }: { children: React.ReactNode })
 		);
 	}
 	return (
-		<div className='h-screen box-border w-full flex flex-col md:flex-row'>
+		<div className='min-h-dvh w-full'>
 			<AppLayout />
-			{children}
+			<main className='min-h-dvh pt-14 md:pl-64 md:pt-0'>{children}</main>
 		</div>
 	);
 }

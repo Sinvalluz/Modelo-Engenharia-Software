@@ -25,7 +25,7 @@ export default function SideBar({ open, setOpen }: SideBarProps) {
 	const queryClient = useQueryClient();
 	return (
 		<aside
-			className={`fixed top-0 left-0 h-screen w-64 bg-sidebar z-50 flex flex-col shadow-xl transition-transform md:static duration-300 ease-in-out ${
+			className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col bg-sidebar shadow-xl transition-transform duration-300 ease-in-out md:translate-x-0 ${
 				open ? 'translate-x-0' : '-translate-x-full'
 			}`}
 		>
