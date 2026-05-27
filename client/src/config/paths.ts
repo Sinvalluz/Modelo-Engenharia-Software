@@ -37,5 +37,9 @@ export const paths = {
 			path: 'launches/:launchId/edit',
 			getHref: (launchId: string) => `/app/launches/${launchId}/edit`,
 		},
+		category: {
+			path: 'category',
+			getHref: () => '/app/category',
+		},
 	},
 } as const;

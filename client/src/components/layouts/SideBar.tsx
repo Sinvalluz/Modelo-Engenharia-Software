@@ -16,7 +16,7 @@ interface SideBarProps {
 const navItems = [
 	{ icon: LayoutDashboard, label: 'Dashboard', href: paths.app.dashboard.getHref() },
 	{ icon: TableOfContents, label: 'Lançamentos', href: paths.app.launches.getHref() },
-	{ icon: Tag, label: 'Categorias', href: '#' },
+	{ icon: Tag, label: 'Categorias', href: paths.app.category.getHref() },
 ];
 
 export default function SideBar({ open, setOpen }: SideBarProps) {
