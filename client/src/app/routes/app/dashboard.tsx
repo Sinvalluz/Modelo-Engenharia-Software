@@ -99,6 +99,15 @@ function filterLaunchesByPeriod(launches: Launch[], filter: PeriodFilter) {
 	});
 }
 
+function getPreviousPeriod(filter: PeriodFilter): PeriodFilter {
+	const previousMonth = new Date(Date.UTC(Number(filter.year), Number(filter.month) - 2, 1));
+
+	return {
+		month: String(previousMonth.getUTCMonth() + 1).padStart(2, '0'),
+		year: String(previousMonth.getUTCFullYear()),
+	};
+}
+
 function filterLaunchesUntilPeriod(launches: Launch[], filter: PeriodFilter) {
 	const lastDayOfSelectedMonth = new Date(Date.UTC(Number(filter.year), Number(filter.month), 0, 23, 59, 59, 999));
 
@@ -126,6 +135,11 @@ export default function DashboardRoute() {
 		[launches, periodFilter.month, periodFilter.year],
 	);
 	const filteredLaunches = useMemo(() => filterLaunchesByPeriod(launches, periodFilter), [launches, periodFilter]);
+	const previousPeriod = useMemo(() => getPreviousPeriod(periodFilter), [periodFilter]);
+	const previousLaunches = useMemo(
+		() => filterLaunchesByPeriod(launches, previousPeriod),
+		[launches, previousPeriod],
+	);
 	const balanceLaunches = useMemo(() => filterLaunchesUntilPeriod(launches, periodFilter), [launches, periodFilter]);
 	const handleRetryLaunches = () => {
 		void launchQuery.refetch();
@@ -204,6 +218,7 @@ export default function DashboardRoute() {
 
 			<InfosArticle
 				launches={filteredLaunches}
+				previousLaunches={previousLaunches}
 				balanceLaunches={balanceLaunches}
 				isLoading={launchQuery.isLoading}
 				isError={launchQuery.isError}

@@ -11,6 +11,7 @@ type DashboardTotals = {
 
 type InfosArticleProps = {
 	launches: Launch[];
+	previousLaunches: Launch[];
 	balanceLaunches: Launch[];
 	isLoading: boolean;
 	isError: boolean;
@@ -65,10 +66,34 @@ function getStatusText(isLoading: boolean, isError: boolean) {
 	return 'Atualizado agora';
 }
 
-export default function InfosArticle({ launches, balanceLaunches, isLoading, isError }: InfosArticleProps) {
+function formatMonthlyComparison(currentValue: number, previousValue: number) {
+	const percentage =
+		previousValue === 0
+			? currentValue === 0
+				? 0
+				: 100
+			: ((currentValue - previousValue) / Math.abs(previousValue)) * 100;
+	const roundedPercentage = Math.round(percentage);
+	const sign = roundedPercentage > 0 ? '+' : '';
+
+	return `${sign}${roundedPercentage}% vs mês anterior`;
+}
+
+export default function InfosArticle({
+	launches,
+	previousLaunches,
+	balanceLaunches,
+	isLoading,
+	isError,
+}: InfosArticleProps) {
 	const totals = useMemo(() => getDashboardTotals(launches), [launches]);
+	const previousTotals = useMemo(() => getDashboardTotals(previousLaunches), [previousLaunches]);
 	const balanceTotals = useMemo(() => getDashboardTotals(balanceLaunches), [balanceLaunches]);
 	const statusText = getStatusText(isLoading, isError);
+	const incomeComparisonText =
+		isLoading || isError ? statusText : formatMonthlyComparison(totals.income, previousTotals.income);
+	const expensesComparisonText =
+		isLoading || isError ? statusText : formatMonthlyComparison(totals.expenses, previousTotals.expenses);
 
 	return (
 		<section className='mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3'>
@@ -102,7 +127,7 @@ export default function InfosArticle({ launches, balanceLaunches, isLoading, isE
 
 				<CardContent className='px-4'>
 					<p className='text-3xl font-bold tracking-normal text-[#00a83f]'>{formatCurrency(totals.income)}</p>
-					<p className='mt-2 text-xs text-[#00a83f]'>{statusText}</p>
+					<p className='mt-2 text-xs text-[#00a83f]'>{incomeComparisonText}</p>
 				</CardContent>
 			</Card>
 
@@ -120,7 +145,7 @@ export default function InfosArticle({ launches, balanceLaunches, isLoading, isE
 					<p className='text-3xl font-bold tracking-normal text-[#f00019]'>
 						{formatCurrency(totals.expenses)}
 					</p>
-					<p className='mt-2 text-xs text-[#f00019]'>{statusText}</p>
+					<p className='mt-2 text-xs text-[#f00019]'>{expensesComparisonText}</p>
 				</CardContent>
 			</Card>
 		</section>

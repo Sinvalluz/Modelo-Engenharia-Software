@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Pie, PieChart } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import DashboardErrorState from '@/features/dashboard/components/states/DashboardErrorState';
 import DashboardLoadingState from '@/features/dashboard/components/states/DashboardLoadingState';
 import type { Launch } from '@/features/launches/types/launches.type';

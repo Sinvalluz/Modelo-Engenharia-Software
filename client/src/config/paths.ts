@@ -22,8 +22,8 @@ export const paths = {
 			getHref: () => '/app',
 		},
 		dashboard: {
-			path: 'dashboard',
-			getHref: () => '/app/dashboard',
+			path: '',
+			getHref: () => '/app',
 		},
 		launches: {
 			path: 'launches',

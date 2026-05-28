@@ -7,6 +7,15 @@ interface DateFieldProps {
 	control: Control<LaunchFormData>;
 }
 
+function getTodayDateInputValue() {
+	const today = new Date();
+	const year = today.getFullYear();
+	const month = String(today.getMonth() + 1).padStart(2, '0');
+	const day = String(today.getDate()).padStart(2, '0');
+
+	return `${year}-${month}-${day}`;
+}
+
 export default function DateField({ control }: DateFieldProps) {
 	return (
 		<Controller
@@ -22,6 +31,7 @@ export default function DateField({ control }: DateFieldProps) {
 							{...field}
 							className='border-0 ring-0 focus-visible:ring-0 dark:bg-transparent h-14 dark:[&::-webkit-calendar-picker-indicator]:invert'
 							type='date'
+							max={getTodayDateInputValue()}
 						/>
 					</div>
 					{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
