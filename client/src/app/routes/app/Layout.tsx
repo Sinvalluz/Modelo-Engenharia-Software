@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router';
 import AppLayout from '@/components/layouts/AppLayout';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
+import PendingNotificationsBanner from '@/features/notifications/components/PendingNotificationsBanner';
 import { fetchMe } from '@/lib/api-client';
 import { useAuth } from '@/providers/AuthProvider';
 
@@ -36,7 +37,10 @@ export default function LayoutRoute({ children }: { children: React.ReactNode })
 	return (
 		<div className='min-h-dvh w-full'>
 			<AppLayout />
-			<main className='min-h-dvh pt-14 md:pl-64 md:pt-0'>{children}</main>
+			<main className='min-h-dvh pt-14 md:pl-64 md:pt-0'>
+				<PendingNotificationsBanner />
+				{children}
+			</main>
 		</div>
 	);
 }

@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { ChevronRight, LayoutDashboard, LogOut, PanelRightOpen, TableOfContents, Tag, User } from 'lucide-react';
+import { BellRing, ChevronRight, LayoutDashboard, LogOut, PanelRightOpen, TableOfContents, Tag, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { paths } from '@/config/paths';
 import { logout } from '@/lib/api-client';
@@ -17,6 +17,7 @@ const navItems = [
 	{ icon: LayoutDashboard, label: 'Dashboard', href: paths.app.dashboard.getHref() },
 	{ icon: TableOfContents, label: 'Lançamentos', href: paths.app.launches.getHref() },
 	{ icon: Tag, label: 'Categorias', href: paths.app.category.getHref() },
+	{ icon: BellRing, label: 'Lembretes', href: paths.app.reminders.getHref() },
 ];
 
 export default function SideBar({ open, setOpen }: SideBarProps) {
