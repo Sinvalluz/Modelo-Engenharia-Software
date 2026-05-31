@@ -48,6 +48,12 @@ export const FormLoginDataSchema = z.object({
 
 export type FormLoginData = z.infer<typeof FormLoginDataSchema>;
 
+export const FormForgotPasswordDataSchema = z.object({
+	email: z.email('Digite um email valido'),
+});
+
+export type FormForgotPasswordData = z.infer<typeof FormForgotPasswordDataSchema>;
+
 export type AuthRegisterResponse = {
 	name: string;
 	id: string;

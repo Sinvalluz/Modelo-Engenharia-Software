@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/createUserDto';
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import { LoginUserDto } from './dto/LoginUserDto';
+import { ForgotPasswordDto } from './dto/ForgotPasswordDto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +46,23 @@ export class AuthController {
 		});
 
 		return { message: 'Login realizado com sucesso' };
+	}
+
+	// POST /auth/forgot-password
+	@ApiOperation({ summary: 'Solicitar recuperação de senha' })
+	@ApiResponse({
+		status: 200,
+		description: 'Solicitacao de recuperação recebida.',
+		schema: {
+			example: {
+				message: 'Se o email informado estiver cadastrado, voce recebera as instrucoes de recuperação.',
+			},
+		},
+	})
+	@Post('forgot-password')
+	@HttpCode(HttpStatus.OK)
+	async forgotPassword(@Body(new ValidationPipe()) body: ForgotPasswordDto) {
+		return this.authService.forgotPassword(body.email);
 	}
 
 	// POST /auth/logout

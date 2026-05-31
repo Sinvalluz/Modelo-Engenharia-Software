@@ -4,6 +4,7 @@ import { env } from '@/config/env';
 import type {
 	AuthLoginResponse,
 	AuthRegisterResponse,
+	FormForgotPasswordData,
 	FormLoginData,
 	FormRegisterDataSchema,
 	User,
@@ -29,6 +30,10 @@ export async function registerWithEmailAndPassword(data: Data) {
 
 export async function loginWithEmailAndPassword(data: FormLoginData) {
 	return await api.post<FormLoginData, AxiosResponse<AuthLoginResponse>>('/auth/signin', data);
+}
+
+export async function requestPasswordReset(data: FormForgotPasswordData) {
+	return await api.post<FormForgotPasswordData, AxiosResponse<{ message: string }>>('/auth/forgot-password', data);
 }
 
 export async function fetchMe() {

@@ -33,4 +33,12 @@ export class AuthService {
 
 		return token;
 	}
+
+	async forgotPassword(email: string) {
+		await this.prismaService.user.findUnique({ where: { email } });
+
+		return {
+			message: 'Se o email informado estiver cadastrado, você receberá as instruções de recuperação.',
+		};
+	}
 }

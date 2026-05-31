@@ -54,6 +54,20 @@ export const createAppRouter = (queryClient: QueryClient) =>
 					],
 				},
 				{
+					path: paths.auth.forgotPassword.path,
+					element: (
+						<PublicRoute>
+							<Outlet />
+						</PublicRoute>
+					),
+					children: [
+						{
+							index: true,
+							lazy: () => import('./routes/auth/ForgotPassword').then(convert(queryClient)),
+						},
+					],
+				},
+				{
 					path: paths.app.root.path,
 					element: (
 						<LayoutRoute>
