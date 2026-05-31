@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CategoryModule } from './category/category.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { NotificationModule } from './notification/notification.module';
 import { ConfigModule } from '@nestjs/config';
 import { envSchema } from './config/env';
 import z from 'zod';
@@ -30,6 +31,7 @@ import z from 'zod';
 		PrismaModule,
 		CategoryModule,
 		TransactionModule,
+		NotificationModule,
 	],
 	controllers: [],
 	providers: [],
