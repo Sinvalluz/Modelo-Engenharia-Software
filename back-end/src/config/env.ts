@@ -7,6 +7,11 @@ export const envSchema = z.object({
 	DATABASE_URL: z.string(),
 	DIRECT_URL: z.string(),
 	JWT_SECRET: z.string(),
+	SMTP_HOST: z.string().optional(),
+	SMTP_PORT: z.coerce.number().optional(),
+	SMTP_USER: z.string().optional(),
+	SMTP_PASS: z.string().optional(),
+	SMTP_FROM: z.string().email().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

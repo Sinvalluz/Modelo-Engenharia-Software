@@ -45,5 +45,9 @@ export const paths = {
 			path: 'category',
 			getHref: () => '/app/category',
 		},
+		reminders: {
+			path: 'reminders',
+			getHref: () => '/app/reminders',
+		},
 	},
 } as const;

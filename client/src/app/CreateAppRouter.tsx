@@ -95,6 +95,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
 							path: paths.app.category.path,
 							lazy: () => import('./routes/app/Category').then(convert(queryClient)),
 						},
+						{
+							path: paths.app.reminders.path,
+							lazy: () => import('./routes/app/ReminderSettings').then(convert(queryClient)),
+						},
 					],
 				},
 				{
