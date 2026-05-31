@@ -24,6 +24,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		if (this.scheduler) clearInterval(this.scheduler);
 	}
 
+	// busca a configuração de notificações do usuário
 	async getReminderConfig(authenticatedUser: JwtUserPayload) {
 		const config = await this.prisma.reminderConfig.findUnique({
 			where: { userId: authenticatedUser.id },
@@ -40,6 +41,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		);
 	}
 
+	// atualiza a configuração de notificações do usuário
 	async updateReminderConfig(dto: UpdateReminderConfigDto, authenticatedUser: JwtUserPayload) {
 		const current = await this.prisma.reminderConfig.findUnique({
 			where: { userId: authenticatedUser.id },
@@ -67,6 +69,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		});
 	}
 
+	// busca notificações não lidas
 	async findPending(authenticatedUser: JwtUserPayload) {
 		return this.prisma.notification.findMany({
 			where: {
@@ -77,6 +80,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		});
 	}
 
+	// marca a notificação como lida
 	async markAsRead(id: string, authenticatedUser: JwtUserPayload) {
 		return this.prisma.notification.update({
 			where: {
@@ -89,6 +93,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		});
 	}
 
+	// prepara os emails a serem lançados
 	async processDueReminders() {
 		const now = new Date();
 		const dueReminders = await this.prisma.reminderConfig.findMany({
@@ -141,6 +146,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		}
 	}
 
+	// calcula a próxima notificação
 	private calculateNextRunAt(frequency: string, time: string, from = new Date()) {
 		const [hours, minutes] = time.split(':').map(Number);
 		const nextRunAt = new Date(from);

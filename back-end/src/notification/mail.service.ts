@@ -26,6 +26,7 @@ export class MailService {
 			})
 		: nodemailer.createTransport({ jsonTransport: true });
 
+	// email enviado para lembrar de atualizar o app
 	async sendReminderEmail({ to, name, title, message }: ReminderEmail) {
 		return this.transporter.sendMail({
 			from: env.SMTP_FROM ?? 'Siscodep <no-reply@siscodep.local>',
