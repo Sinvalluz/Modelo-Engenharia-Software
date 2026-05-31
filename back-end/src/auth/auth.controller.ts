@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import { LoginUserDto } from './dto/LoginUserDto';
 import { ForgotPasswordDto } from './dto/ForgotPasswordDto';
+import { ResetPasswordDto } from './dto/ResetPasswordDto';
 
 @Controller('auth')
 export class AuthController {
@@ -52,7 +53,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Solicitar recuperação de senha' })
 	@ApiResponse({
 		status: 200,
-		description: 'Solicitacao de recuperação recebida.',
+		description: 'Solicitação de recuperação recebida.',
 		schema: {
 			example: {
 				message: 'Se o email informado estiver cadastrado, voce recebera as instrucoes de recuperação.',
@@ -63,6 +64,21 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	async forgotPassword(@Body(new ValidationPipe()) body: ForgotPasswordDto) {
 		return this.authService.forgotPassword(body.email);
+	}
+
+	// POST /auth/reset-password
+	@ApiOperation({ summary: 'Redefinir senha usando token de recuperação' })
+	@ApiResponse({
+		status: 200,
+		description: 'Senha redefinida com sucesso.',
+		schema: {
+			example: { message: 'Senha redefinida com sucesso.' },
+		},
+	})
+	@Post('reset-password')
+	@HttpCode(HttpStatus.OK)
+	async resetPassword(@Body(new ValidationPipe()) body: ResetPasswordDto) {
+		return this.authService.resetPassword(body);
 	}
 
 	// POST /auth/logout

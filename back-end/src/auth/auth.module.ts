@@ -5,10 +5,12 @@ import { UserModule } from '../user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { env } from '../config/env';
+import { NotificationModule } from '../notification/notification.module';
 @Module({
 	imports: [
 		UserModule,
 		PrismaModule,
+		NotificationModule,
 		JwtModule.register({
 			global: true,
 			secret: env.JWT_SECRET,

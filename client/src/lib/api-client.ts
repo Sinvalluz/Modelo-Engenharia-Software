@@ -7,6 +7,7 @@ import type {
 	FormForgotPasswordData,
 	FormLoginData,
 	FormRegisterDataSchema,
+	FormResetPasswordData,
 	User,
 } from '@/types/user';
 
@@ -34,6 +35,13 @@ export async function loginWithEmailAndPassword(data: FormLoginData) {
 
 export async function requestPasswordReset(data: FormForgotPasswordData) {
 	return await api.post<FormForgotPasswordData, AxiosResponse<{ message: string }>>('/auth/forgot-password', data);
+}
+
+export async function resetPassword(data: FormResetPasswordData & { token: string }) {
+	return await api.post('/auth/reset-password', {
+		token: data.token,
+		password: data.password,
+	});
 }
 
 export async function fetchMe() {
