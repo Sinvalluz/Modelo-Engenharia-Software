@@ -62,7 +62,7 @@ export default function LoginForm({ ...props }: LoginFormProps) {
 				label='Senha'
 			/>
 			<Link
-				to={'/auth/forgot-password'}
+				to={paths.auth.forgotPassword.getHref()}
 				className='text-end w-full block text-sm text-muted-foreground transition-colors hover:text-foreground'
 			>
 				Esqueceu a senha?

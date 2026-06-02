@@ -54,6 +54,34 @@ export const createAppRouter = (queryClient: QueryClient) =>
 					],
 				},
 				{
+					path: paths.auth.forgotPassword.path,
+					element: (
+						<PublicRoute>
+							<Outlet />
+						</PublicRoute>
+					),
+					children: [
+						{
+							index: true,
+							lazy: () => import('./routes/auth/ForgotPassword').then(convert(queryClient)),
+						},
+					],
+				},
+				{
+					path: paths.auth.resetPassword.path,
+					element: (
+						<PublicRoute>
+							<Outlet />
+						</PublicRoute>
+					),
+					children: [
+						{
+							index: true,
+							lazy: () => import('./routes/auth/ResetPassword').then(convert(queryClient)),
+						},
+					],
+				},
+				{
 					path: paths.app.root.path,
 					element: (
 						<LayoutRoute>
@@ -80,6 +108,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
 						{
 							path: paths.app.category.path,
 							lazy: () => import('./routes/app/Category').then(convert(queryClient)),
+						},
+						{
+							path: paths.app.reminders.path,
+							lazy: () => import('./routes/app/ReminderSettings').then(convert(queryClient)),
 						},
 					],
 				},

@@ -48,6 +48,24 @@ export const FormLoginDataSchema = z.object({
 
 export type FormLoginData = z.infer<typeof FormLoginDataSchema>;
 
+export const FormForgotPasswordDataSchema = z.object({
+	email: z.email('Digite um email valido'),
+});
+
+export type FormForgotPasswordData = z.infer<typeof FormForgotPasswordDataSchema>;
+
+export const FormResetPasswordDataSchema = z
+	.object({
+		password: z.string().min(8, 'A senha deve ter no minimo 8 caracteres'),
+		confirmPassword: z.string().min(8, 'Confirme sua senha'),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: 'As senhas devem ser iguais',
+		path: ['confirmPassword'],
+	});
+
+export type FormResetPasswordData = z.infer<typeof FormResetPasswordDataSchema>;
+
 export type AuthRegisterResponse = {
 	name: string;
 	id: string;

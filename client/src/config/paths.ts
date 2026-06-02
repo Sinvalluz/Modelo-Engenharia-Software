@@ -15,6 +15,15 @@ export const paths = {
 			getHref: (redirectTo?: string | null | undefined) =>
 				`/auth/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
 		},
+		forgotPassword: {
+			path: 'auth/forgot-password',
+			getHref: () => '/auth/forgot-password',
+		},
+		resetPassword: {
+			path: 'auth/reset-password',
+			getHref: (token?: string | null | undefined) =>
+				`/auth/reset-password${token ? `?token=${encodeURIComponent(token)}` : ''}`,
+		},
 	},
 	app: {
 		root: {
@@ -40,6 +49,10 @@ export const paths = {
 		category: {
 			path: 'category',
 			getHref: () => '/app/category',
+		},
+		reminders: {
+			path: 'reminders',
+			getHref: () => '/app/reminders',
 		},
 	},
 } as const;

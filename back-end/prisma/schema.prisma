@@ -20,6 +20,8 @@ model User {
   updatedAt      DateTime   @updatedAt @map("updated_at")
   categories     Category[]
   launch         Launch[]
+  reminderConfig ReminderConfig?
+  notifications  Notification[]
 }
 
 model Category {
@@ -61,4 +63,35 @@ enum launchType {
 enum Role {
   USER
   ADMIN
+}
+
+model ReminderConfig {
+  id        String            @id @default(uuid())
+  userId    String            @unique @map("user_id")
+  active    Boolean           @default(false)
+  frequency ReminderFrequency @default(DAILY)
+  time      String            @default("08:00")
+  nextRunAt DateTime?         @map("next_run_at")
+  lastSentAt DateTime?        @map("last_sent_at")
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  title       String
+  message     String
+  scheduledFor DateTime @map("scheduled_for")
+  emailSentAt DateTime? @map("email_sent_at")
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ReminderFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
 }
