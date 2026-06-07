@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Pie, PieChart } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardErrorState from '@/features/dashboard/components/states/DashboardErrorState';
 import DashboardLoadingState from '@/features/dashboard/components/states/DashboardLoadingState';
-import type { Launch } from '@/features/launches/types/launches.type';
+import type { Launch, LaunchType } from '@/features/launches/types/launches.type';
 
 type CategoryChartData = {
 	categoryKey: string;
@@ -33,13 +34,23 @@ const percentFormatter = new Intl.NumberFormat('pt-BR', {
 
 const fallbackColors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
 
-function buildCategoryChartData(launches: Launch[]) {
+const typeDescriptions: Record<LaunchType, string> = {
+	EXPENSES: 'Distribuição das despesas por categoria',
+	INCOME: 'Distribuição das entradas por categoria',
+};
+
+const emptyMessages: Record<LaunchType, string> = {
+	EXPENSES: 'Nenhuma despesa encontrada.',
+	INCOME: 'Nenhuma entrada encontrada.',
+};
+
+function buildCategoryChartData(launches: Launch[], selectedType: LaunchType) {
 	const categories = new Map<string, CategoryChartData>();
 
 	for (const launch of launches) {
 		const value = Number(launch.value);
 
-		if (!launch.category || Number.isNaN(value)) continue;
+		if (launch.type !== selectedType || !launch.category || Number.isNaN(value)) continue;
 
 		const categoryKey = launch.category.id;
 		const currentCategory = categories.get(categoryKey);
@@ -79,15 +90,33 @@ function buildChartConfig(chartData: CategoryChartData[]) {
 }
 
 export function CategoryChartPie({ launches, isLoading, isError, onRetry }: CategoryChartPieProps) {
-	const chartData = useMemo(() => buildCategoryChartData(launches), [launches]);
+	const [selectedType, setSelectedType] = useState<LaunchType>('EXPENSES');
+	const chartData = useMemo(() => buildCategoryChartData(launches, selectedType), [launches, selectedType]);
 	const chartConfig = useMemo(() => buildChartConfig(chartData), [chartData]);
 	const chartTotal = useMemo(() => chartData.reduce((total, category) => total + category.total, 0), [chartData]);
 
 	return (
 		<Card className='flex flex-col'>
-			<CardHeader className='items-center pb-0'>
-				<CardTitle>Categorias</CardTitle>
-				<CardDescription>Distribuição dos lançamentos por categoria</CardDescription>
+			<CardHeader className='flex flex-col gap-3 pb-0 sm:flex-row sm:items-start sm:justify-between'>
+				<div className='space-y-1 text-center sm:text-left'>
+					<CardTitle>Categorias</CardTitle>
+					<CardDescription>{typeDescriptions[selectedType]}</CardDescription>
+				</div>
+				<Select
+					value={selectedType}
+					onValueChange={(value) => setSelectedType(value as LaunchType)}
+				>
+					<SelectTrigger
+						className='w-full sm:w-34'
+						aria-label='Filtrar tipo de lançamento'
+					>
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent align='end'>
+						<SelectItem value='EXPENSES'>Despesa</SelectItem>
+						<SelectItem value='INCOME'>Entrada</SelectItem>
+					</SelectContent>
+				</Select>
 			</CardHeader>
 			<CardContent className='flex-1 pb-0'>
 				{isLoading && <DashboardLoadingState rows={3} />}
@@ -96,7 +125,7 @@ export function CategoryChartPie({ launches, isLoading, isError, onRetry }: Cate
 
 				{!isLoading && !isError && chartData.length === 0 && (
 					<div className='flex h-62.5 items-center justify-center text-sm text-muted-foreground'>
-						Nenhum lançamento encontrado.
+						{emptyMessages[selectedType]}
 					</div>
 				)}
 
