@@ -5,6 +5,8 @@ import { ReminderFrequencyDto, UpdateReminderConfigDto } from './dto/update-remi
 import { MailService } from './mail.service';
 
 const ONE_MINUTE = 60_000;
+const LOCAL_TIMEZONE_OFFSET_IN_MINUTES = -3 * 60;
+const LOCAL_TIMEZONE_OFFSET = '-03:00';
 
 @Injectable()
 export class NotificationService implements OnModuleInit, OnModuleDestroy {
@@ -30,14 +32,14 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 			where: { userId: authenticatedUser.id },
 		});
 
-		return (
+		return this.formatReminderConfig(
 			config ?? {
 				active: false,
 				frequency: ReminderFrequencyDto.DAILY,
 				time: '08:00',
 				nextRunAt: null,
 				lastSentAt: null,
-			}
+			},
 		);
 	}
 
@@ -51,22 +53,26 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 		const frequency = dto.frequency ?? current?.frequency ?? ReminderFrequencyDto.DAILY;
 		const time = dto.time ?? current?.time ?? '08:00';
 
-		return this.prisma.reminderConfig.upsert({
+		const nextRunAt = active ? this.calculateNextRunAt(frequency, time) : null;
+
+		const config = await this.prisma.reminderConfig.upsert({
 			where: { userId: authenticatedUser.id },
 			create: {
 				userId: authenticatedUser.id,
 				active,
 				frequency,
 				time,
-				nextRunAt: active ? this.calculateNextRunAt(frequency, time) : null,
+				nextRunAt,
 			},
 			update: {
 				active,
 				frequency,
 				time,
-				nextRunAt: active ? this.calculateNextRunAt(frequency, time) : null,
+				nextRunAt,
 			},
 		});
+
+		return this.formatReminderConfig(config);
 	}
 
 	// busca notificações não lidas
@@ -96,11 +102,12 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 	// prepara os emails a serem lançados
 	async processDueReminders() {
 		const now = new Date();
+		const databaseNow = this.toDatabaseLocalDate(now);
 		const dueReminders = await this.prisma.reminderConfig.findMany({
 			where: {
 				active: true,
 				nextRunAt: {
-					lte: now,
+					lte: databaseNow,
 				},
 			},
 			include: {
@@ -116,7 +123,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 					userId: reminder.userId,
 					title,
 					message,
-					scheduledFor: reminder.nextRunAt ?? now,
+					scheduledFor: reminder.nextRunAt ?? databaseNow,
 				},
 			});
 
@@ -129,7 +136,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 					title,
 					message,
 				});
-				emailSentAt = new Date();
+				emailSentAt = this.toDatabaseLocalDate(new Date());
 				await this.prisma.notification.update({
 					where: { id: notification.id },
 					data: { emailSentAt },
@@ -138,7 +145,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 				await this.prisma.reminderConfig.update({
 					where: { id: reminder.id },
 					data: {
-						lastSentAt: emailSentAt ?? now,
+						lastSentAt: emailSentAt ?? databaseNow,
 						nextRunAt: this.calculateNextRunAt(reminder.frequency, reminder.time, now),
 					},
 				});
@@ -147,22 +154,54 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	// calcula a próxima notificação
-	private calculateNextRunAt(frequency: string, time: string, from = new Date()) {
+	private calculateNextRunAt(frequency: string, time: string, from = new Date()): Date {
 		const [hours, minutes] = time.split(':').map(Number);
-		const nextRunAt = new Date(from);
-		nextRunAt.setSeconds(0, 0);
-		nextRunAt.setHours(hours, minutes, 0, 0);
+		const localFrom = this.toDatabaseLocalDate(from);
+		const nextRunAt = new Date(
+			Date.UTC(
+				localFrom.getUTCFullYear(),
+				localFrom.getUTCMonth(),
+				localFrom.getUTCDate(),
+				hours,
+				minutes,
+				0,
+				0,
+			),
+		);
 
-		if (nextRunAt <= from) {
+		if (nextRunAt <= localFrom) {
 			if (frequency === ReminderFrequencyDto.WEEKLY) {
-				nextRunAt.setDate(nextRunAt.getDate() + 7);
+				nextRunAt.setUTCDate(nextRunAt.getUTCDate() + 7);
 			} else if (frequency === ReminderFrequencyDto.MONTHLY) {
-				nextRunAt.setMonth(nextRunAt.getMonth() + 1);
+				nextRunAt.setUTCMonth(nextRunAt.getUTCMonth() + 1);
 			} else {
-				nextRunAt.setDate(nextRunAt.getDate() + 1);
+				nextRunAt.setUTCDate(nextRunAt.getUTCDate() + 1);
 			}
 		}
 
 		return nextRunAt;
+	}
+
+	private toDatabaseLocalDate(date: Date): Date {
+		return new Date(date.getTime() + LOCAL_TIMEZONE_OFFSET_IN_MINUTES * 60_000);
+	}
+
+	private formatReminderConfig<T extends { nextRunAt?: Date | null; lastSentAt?: Date | null }>(config: T) {
+		return {
+			...config,
+			nextRunAt: config.nextRunAt ? this.formatLocalDateTime(config.nextRunAt) : null,
+			lastSentAt: config.lastSentAt ? this.formatLocalDateTime(config.lastSentAt) : null,
+		};
+	}
+
+	private formatLocalDateTime(date: Date): string {
+		const year = date.getUTCFullYear();
+		const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+		const day = String(date.getUTCDate()).padStart(2, '0');
+		const hours = String(date.getUTCHours()).padStart(2, '0');
+		const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+		const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+		return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${LOCAL_TIMEZONE_OFFSET}`;
 	}
 }
